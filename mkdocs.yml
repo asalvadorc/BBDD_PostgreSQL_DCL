@@ -1,0 +1,26 @@
+site_url : https://github.com/asalvadorc/BBDD_POSTGRES_DCL
+site_name: BD - Bases de Dades
+theme: 
+  name: readthedocs
+  logo: assets/logocaminas.png
+
+extra_css:
+  - css/extra.css
+  - img/favicon.ico 
+
+markdown_extensions:
+  - admonition
+  - tables    
+  - attr_list
+  - toc 
+  - pymdownx.emoji
+  - pymdownx.extra
+  - pymdownx.superfences
+
+nav:
+  - POSTGRESQL - DCL :
+    - 1. Introducció: 1_introducci.md
+    - 2. DCL: 2_dcl.md
+    
+  
+    
