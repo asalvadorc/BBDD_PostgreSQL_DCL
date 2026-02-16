@@ -19,8 +19,12 @@ markdown_extensions:
 
 nav:
   - POSTGRESQL - DCL :
-    - 1. Introducció: 1_introducci.md
-    - 2. DCL: 2_dcl.md
+    - 0. Introducció: 1_introducci.md
+    - 1. DCL: 1-DCL.md
+    - 1. DCL: 1-DCLv2.md 
+    - 1.1 Práctica: 1.1-Practica.md
+    - 2. TCL: 2-TCL.md
+
     
   
     
