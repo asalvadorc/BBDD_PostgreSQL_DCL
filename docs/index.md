@@ -4,6 +4,6 @@ title:  "Bases de Dades"
 
 # ***Bases de Dades***
 
->>>>>>![](portada.png)
+>>>>>>![](portada4.png)
 
 
