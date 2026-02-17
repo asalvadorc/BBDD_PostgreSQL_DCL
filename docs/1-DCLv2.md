@@ -7,11 +7,58 @@ A través del DCL, los administradores de bases de datos pueden otorgar o revoca
 
 ---
 
+## Esquemas
+
+
+Cuando trabajamos con bases de datos en PostgreSQL, no todo está simplemente “dentro” de la base de datos sin orden. Existe un nivel intermedio de organización llamado **esquema**, que cumple una función muy importante.
+
+Un **esquema** puede entenderse como **una forma de estructurar y separar los distintos objetos** que existen dentro de una misma base de datos. Es decir, **las tablas, vistas, secuencias, funciones o tipos de datos** no se guardan directamente en la base de datos, sino dentro de un esquema.
+
+Podemos imaginar la base de datos como si fuera un archivador grande. Dentro de ese archivador hay carpetas, y dentro de cada carpeta hay documentos. En este caso, las carpetas serían los esquemas y los documentos serían las tablas u otros objetos.
+
+!!!Tip ""
+    Gracias a esto, es posible organizar la información según su función.  
+    Por ejemplo, una misma empresa podría tener un esquema para el área de ventas, otro para recursos humanos y otro para contabilidad. Cada uno contendría únicamente las tablas relacionadas con su actividad. Así, podrían existir tablas llamadas “clientes” en distintos contextos sin que haya conflicto, ya que pertenecerían a esquemas diferentes.
+
+    ![alt text](image-6.png)
+
+Además de servir para organizar, los esquemas son fundamentales desde el punto de vista de la **seguridad**. En PostgreSQL, los permisos no se conceden únicamente sobre la base de datos en general, sino sobre elementos concretos. Y esos elementos se encuentran dentro de un esquema. Por tanto, si queremos controlar quién puede acceder a ciertas tablas, lo primero que necesitamos es tener claro en qué esquema se encuentran.
+
+!!!Tip ""
+    ![alt text](image-5.png)
+
+También es importante saber que PostgreSQL crea por defecto un esquema llamado **public**, que es donde se crean los objetos si no se indica ningún otro. Por eso, muchas veces trabajamos sin ser conscientes de que estamos usando un esquema, aunque realmente siempre existe.
+
+**En resumen**, los esquemas permiten organizar los objetos de una base de datos y establecer límites claros de acceso. Por este motivo, antes de hablar de usuarios, grupos o roles, es conveniente entender qué son los esquemas, ya que los permisos que se asignan a esos usuarios se aplicarán sobre los objetos contenidos en ellos.
+
 ## Usuarios, grupos y roles
 
-Los usuarios, grupos y roles son lo mismo en PostgreSQL, Los usuarios y grupos son roles, la diferencia es que los usuarios pueden iniciar sesión y los grupos se usan para agrupar permisos. 
 
-Las instrucciones CREATE USER y CREATE GROUP son en realidad alias de la instrucción CREATE ROLE. Para crear un usuario de PostgreSQL, utilizaremos la siguiente instrucción SQL:
+![alt text](image.png)
+
+Una vez entendido que los objetos de una base de datos se organizan dentro de esquemas, el siguiente paso lógico es plantearse quién puede acceder a esos objetos y qué puede hacer con ellos. Para ello, PostgreSQL utiliza un sistema de control de acceso basado en lo que denomina roles.
+
+A diferencia de otros sistemas gestores de bases de datos, PostgreSQL no distingue realmente entre usuarios y grupos como entidades diferentes. En su lugar, todo se gestiona mediante roles. Un rol puede comportarse como un usuario, como un grupo o como una combinación de ambos, dependiendo de los permisos que tenga asignados.
+
+Un rol que tiene permiso para iniciar sesión en el sistema actúa como un usuario. Es decir, representa a una persona o aplicación que puede conectarse a la base de datos. Por otro lado, un rol que no tiene permiso de inicio de sesión puede utilizarse para agrupar permisos. En ese caso, funciona como un grupo.
+
+Esto permite una gestión mucho más flexible de la seguridad. En lugar de asignar permisos directamente a cada usuario, lo habitual es crear roles que representen funciones dentro de la organización, como por ejemplo desarrolladores, administrativos o analistas. Después, se asignan permisos a esos roles sobre determinados esquemas o tablas, y finalmente se asocian los usuarios a los roles correspondientes.
+
+De esta manera, cuando un usuario pasa a formar parte de un rol, hereda automáticamente todos los permisos que dicho rol tenga asignados. Si en algún momento cambian las necesidades de acceso, basta con modificar los permisos del rol en lugar de hacerlo usuario por usuario.
+
+Este sistema simplifica enormemente la administración de la seguridad, especialmente cuando el número de usuarios crece. Además, permite reflejar la estructura real de una organización dentro de la base de datos, separando claramente quién puede conectarse al sistema y qué puede hacer una vez dentro.
+
+En definitiva, los roles son el mecanismo que utiliza PostgreSQL para gestionar la autenticación y los permisos. Gracias a ellos, es posible controlar el acceso a los distintos esquemas y objetos de forma organizada y escalable.
+
+
+!!!Note ""
+    PostgreSQL usa una única figura llamada **ROL**, que puede comportarse como:
+
+    - Usuario → si puede iniciar sesión
+    - Grupo → si agrupa permisos
+    - Rol → si solo sirve para gestionar permisos
+
+Las instrucciones **CREATE USER** y **CREATE GROUP** son en realidad alias de la instrucción **CREATE ROLE**. Para crear un usuario de PostgreSQL, utilizaremos la siguiente instrucción SQL:
 
     CREATE USER myuser WITH PASSWORD 'passwd';
 
