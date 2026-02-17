@@ -16,11 +16,11 @@ Un **esquema** puede entenderse como **una forma de estructurar y separar los di
 
 Podemos imaginar la base de datos como si fuera un archivador grande. Dentro de ese archivador hay carpetas, y dentro de cada carpeta hay documentos. En este caso, las carpetas serían los esquemas y los documentos serían las tablas u otros objetos.
 
-!!!Tip ""
-    Gracias a esto, es posible organizar la información según su función.  
-    Por ejemplo, una misma empresa podría tener un esquema para el área de ventas, otro para recursos humanos y otro para contabilidad. Cada uno contendría únicamente las tablas relacionadas con su actividad. Así, podrían existir tablas llamadas “clientes” en distintos contextos sin que haya conflicto, ya que pertenecerían a esquemas diferentes.
+Gracias a esto, es posible organizar la información según su función. 
 
-    ![alt text](image-6.png)
+!!!Tip ""
+    ![alt text](image-7.png)
+
 
 Además de servir para organizar, los esquemas son fundamentales desde el punto de vista de la **seguridad**. En PostgreSQL, los permisos no se conceden únicamente sobre la base de datos en general, sino sobre elementos concretos. Y esos elementos se encuentran dentro de un esquema. Por tanto, si queremos controlar quién puede acceder a ciertas tablas, lo primero que necesitamos es tener claro en qué esquema se encuentran.
 
