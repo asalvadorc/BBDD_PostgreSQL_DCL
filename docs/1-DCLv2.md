@@ -18,14 +18,13 @@ Podemos imaginar la base de datos como si fuera un archivador grande. Dentro de 
 
 Gracias a esto, es posible organizar la información según su función. 
 
-!!!Tip ""
-    ![alt text](image-7.png)
+![alt text](image-7.png)
 
 
 Además de servir para organizar, los esquemas son fundamentales desde el punto de vista de la **seguridad**. En PostgreSQL, los permisos no se conceden únicamente sobre la base de datos en general, sino sobre elementos concretos. Y esos elementos se encuentran dentro de un esquema. Por tanto, si queremos controlar quién puede acceder a ciertas tablas, lo primero que necesitamos es tener claro en qué esquema se encuentran.
 
-!!!Tip ""
-    ![alt text](image-5.png)
+
+![alt text](image-5.png)
 
 También es importante saber que PostgreSQL crea por defecto un esquema llamado **public**, que es donde se crean los objetos si no se indica ningún otro. Por eso, muchas veces trabajamos sin ser conscientes de que estamos usando un esquema, aunque realmente siempre existe.
 
