@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://github.com/asalvadorc/BBDD_POSTGRES_DCL/1-DCL/" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>1. DCL - BD - Bases de Dades</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../css/extra.css" rel="stylesheet" />
+        <link href="../img/favicon.ico" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "1. DCL";
+        var mkdocs_page_input_path = "1-DCL.md";
+        var mkdocs_page_url = "/asalvadorc/BBDD_POSTGRES_DCL/1-DCL/";
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="..">
+          <img src="../assets/logocaminas.png" class="logo" alt="Logo"/>
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">POSTGRESQL - DCL</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../1_introducci/">0. Introducció</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">1. DCL</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#usuaris">Usuaris</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#la-seguretat">La seguretat</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#altres-sentencies-dcl">Altres sentències DCL</a>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../1-DCLv2/">1. DCL</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../1.1-Practica/">1.1 Práctica</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../2-TCL/">2. TCL</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">BD - Bases de Dades</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">POSTGRESQL - DCL</li>
+      <li class="breadcrumb-item active">1. DCL</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="el-llenguatge-de-control-de-les-dades-dcl">El llenguatge de control de les dades DCL</h1>
+<p><strong>El Data Control Language (DCL – Llenguatge de control de dades)</strong> s’utilitza per gestionar els permisos i privilegis d’accés als objectes dins d’una base de dades, establint polítiques de seguretat que determinen quins usuaris o rols poden interactuar amb les dades i de quina manera.</p>
+<p>A través del DCL, els administradors de bases de dades poden atorgar o revocar permisos, assegurant que cada usuari només puga realitzar les accions que li han sigut expressament autoritzades. Aquest control és essencial per protegir la informació sensible, evitar accessos no autoritzats i mantenir la integritat de les dades.</p>
+<h2 id="usuaris">Usuaris</h2>
+<p>Així doncs, el primer pas és la creació d’usuaris i de les seues credencials.</p>
+<p>SQL proporciona comandes específiques per crear, modificar i eliminar usuaris, encara que la sintaxi pot variar lleugerament segons el SGBD (com SQLite, PostgreSQL o Oracle).</p>
+<p>Per crear un nou usuari es fa amb la sentència CREATE USER, mitjançant la sintaxi.</p>
+<pre><code>CREATE USER nombre_usuario IDENTIFIED BY 'contraseña';
+</code></pre>
+<p>En indicar la contrasenya, aquesta s’encriptarà amb un hash mitjançant l’algorisme mysql_native_password. El hash és irreversible, la qual cosa significa que no es pot recuperar la contrasenya original a partir d’aquest.    </p>
+<h2 id="la-seguretat">La seguretat</h2>
+<p>El propietari de la base de dades és qui en té tots els privilegis, però no és l’únic que hi accedeix. A una base de dades poden accedir moltes persones, que moltes vegades potser no tenen res a veure o no es coneixen en fer els accessos remotament per diferents motius.</p>
+<p><em>Per exemple, a una base de dades amb l’estoc de productes d’una distribuïdora amb moltes botigues ubicades a diferents poblacions podran accedir per manipular o consultar dades persones tant distintes com:</em></p>
+<ul>
+<li><strong>Receptors de productes als magatzems</strong>, per actualitzar-ne els estocs.</li>
+<li><strong>Treballadors</strong> per consultar si hi ha estoc d’un producte determinat.</li>
+<li><strong>Les màquines registradores</strong>, automàticament, per actualitzar l’estoc després d’una venda.</li>
+<li><strong>Els encarregats de les compre</strong>s, per consultar la situació i prendre decisions.</li>
+<li><strong>Els treballadors del departament de control</strong> per prendre un altre tipus de decisions.</li>
+<li><strong>Els clients finals</strong>, des de casa seva, consultant si poden anar a comprar aquell producte determinat.</li>
+</ul>
+<p>Segons es veu en aquest situació, poden arribar a ser moltes mans les que accedeixin a les dades. Però no serà el mateix el que ha de poder veure un client final des de casa seva que el que ha de veure un treballador del departament de control. Per aquesta raó, és important assignar una sèrie de privilegis als usuaris que accedeixen a les dades, de tal manera que cada usuari tingui un perfil assignat amb uns permisos determinats sobre la base de dades, en global, i sobre les relacions, en particular.</p>
+<p>L’assignació dels privilegis es pot dur a terme des de dos possibles punts de vista:</p>
+<ol>
+<li>Des del punt de vista de l’usuari.</li>
+<li>Des del punt de vista de les taules o les vistes.</li>
+</ol>
+<p>La sentència que es fa servir en ambdós casos per assignar permisos és la sentència <code>GRANT</code>.</p>
+<p>La seva sintaxi és:</p>
+<div class="highlight"><pre><span></span><code>GRANT { &lt;Privilegi1&gt; [, &lt; Privilegi2&gt; ..] } | ALL
+ON [&lt;User1&gt;.]&lt;Objecte&gt;
+TO {&lt;User2&gt; [, &lt;User3&gt; ...]} | PUBLIC.
+</code></pre></div>
+<p>Els privilegis poden ser:</p>
+<ul>
+<li><code>ALL</code>: assigna tots els permisos possibles a una taula o a una vista.</li>
+<li><code>SELECT</code>: assigna el permís de fer consultes (llegir) a un usuari o sobre una taula concreta.</li>
+<li><code>INSERT</code>: assigna el permís d’inserció de dades a un usuari o sobre una taula concreta.</li>
+<li><code>UPDATE</code>: assigna el permís de modificació de dades a un usuari o sobre una taula concreta.</li>
+<li><code>DELETE</code>: assigna el permís d’esborrament de dades a un usuari o sobre una taula concreta.</li>
+<li><code>INDEX</code>: assigna el permís de creació d’índexs per a una taula concreta o per a un usuari.</li>
+<li><code>ALTER</code>*: assigna el permís de modificació de l’estructura d’una taula o a un usuari.</li>
+</ul>
+<p>Un <em>Objecte</em> pot ser una taula o una vista.<br />
+Un <em>User</em> es refereix a un usuari concret.</p>
+<p>Per exemple:</p>
+<div class="highlight"><pre><span></span><code>GRANT SELECT
+ON Productes
+TO Joan
+</code></pre></div>
+<p>En aquest exemple s’atorga el permís de consultes a l’usuari <em>Joan</em> sobre la taula <em>Productes</em>.</p>
+<p>La sentència que es fa servir per treure els permisos a un usuari determinat o sobre una taula determinada és <code>REVOKE</code>.</p>
+<p>La seva sintaxi és:</p>
+<div class="highlight"><pre><span></span><code>REVOKE {ALL | SELECT | INSERT | DELETE | INDEX | ALTER |
+UPDATE | UPDATE(&lt;Columna1&gt; [, &lt;Columna2&gt; ...])}
+ON {&lt;Taula&gt; | &lt;Vista&gt;}
+FROM {PUBLIC | &lt;Usuari1&gt; [, &lt;Usuari2&gt; ...]}
+{RESTRICT/CASCADE}
+</code></pre></div>
+<p>Un exemple d’utilització de la sentència <code>REVOKE</code> és:</p>
+<div class="highlight"><pre><span></span><code>REVOKE ALL
+ON Proveïdors
+TO Joan
+</code></pre></div>
+<p>en què ara es treuen tots els privilegis sobre la taula <em>Proveïdors</em> a l’usuari <em>Joan</em>, que no podrà ni accedir a registres d’aquesta taula, ni modificar-los, ni esborrar-los.</p>
+<p>Les opcions <code>RESTRICT</code>/<code>CASCADE</code> permeten allargar o aturar l’aplicació de la sentència <code>REVOKE</code> al llarg dels usuaris que s’hagin anant donant permisos. És a dir, si un usuari B va donar permisos a l’usuari C per accedir a una taula determinada. Ara l’usuari B rep una sentència que revoca els seus privilegis per accedir a aquesta taula amb la indicació <code>CASCADE</code>. Automàticament l’usuari C perdrà els privilegis d’accés a aquesta taula també.</p>
+<h3 id="altres-sentencies-dcl">Altres sentències DCL</h3>
+<p>A més de les sentencies sobre transaccions i seguretat, cal referenciar altres sentències també molt útils i importants que s’engloben dins del llenguatge de control de dades.</p>
+<p>És el cas de l’accés múltiple a les taules i les estratègies existents de bloqueig.</p>
+<p>Per exemple, a partir d’una base de dades amb informacions sobre vols que es fa servir per accedir des d’un entorn web per reservar i comprar bitllets, dos usuaris accedeixen a la vegada a la consulta de places per a un vol determinat. Cada usuari vol comprar tres bitllets, però només en queden dos. Si hi accedeixen a la vegada i cerquen el mateix vol abans que l’altre hagi fet efectiva la compra, si no s’han pres mesures, els dos veuran places disponibles i pensaran que les poden comprar. En algun moment caldria establir un criteri per decidir a quin dels dos li vendran els bitllets, i l’altre es quedarà amb un pam de nas.</p>
+<p>Per solucionar aquest problema es poden fer servir instruccions que permetin bloquejar una taula determinada mentre un usuari l’està fent servir.</p>
+<p>La sentència <code>SHARE LOCK</code> permet compartir l’ús de la taula per més d’un usuari a la vegada, si es troba en mode compartició.</p>
+<p>La seva sintaxi és:</p>
+<div class="highlight"><pre><span></span><code>LOCK TABLE [&lt;User&gt;.]&lt;tablename&gt; IN SHARE [nowait]
+</code></pre></div>
+<p>Una altra sentència és <code>EXCLUSIVE LOCK</code>. Aquesta sentència permet bloquejar una taula per a la resta d’usuaris de la base de dades. Aquesta sentència és fàcil d’utilitzar, però comporta molt temps d’espera per a la resta d’usuaris.</p>
+<p>La seva sintaxi és:</p>
+<div class="highlight"><pre><span></span><code>LOCK TABLE [&lt;User&gt;.]&lt;tablename&gt; IN EXCLUSIVE [nowait]
+</code></pre></div>
+<p>Per solucionar els problemes de la sentència anterior es pot fer servir un sistema anomenat <em>bloqueig exclusiu de línies</em>.</p>
+<p>El bloqueig de cada línia és, sens dubte, la millor manera de resoldre el problema de les esperes. Es recomana utilitzar un dels mètodes de bloqueig de les dades només si és necessari.</p>
+<p>La seva sintaxi és:</p>
+<div class="highlight"><pre><span></span><code>SELECT ....
+FROM ...
+[WHERE ...]
+[ORDER BY ...]
+FOR UPDATE OF Spalte1 [, Spalte2] ...
+</code></pre></div>
+<p>Un exemple d’utilització:</p>
+<div class="highlight"><pre><span></span><code>SELECT Llocs, Des de, Fins, Ubicació
+FROM Viatges
+WHERE Ubicació  = &#39;Rom&#39;
+FOR UPDATE OF Llocs
+UPDATE Viatges
+SET Llocs = Llocs – Llocs_reservats
+WHERE Ubicació = &#39;Rom&#39;
+Commit
+</code></pre></div>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../1_introducci/" class="btn btn-neutral float-left" title="0. Introducció"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../1-DCLv2/" class="btn btn-neutral float-right" title="1. DCL">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../1_introducci/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../1-DCLv2/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

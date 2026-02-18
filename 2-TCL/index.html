@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://github.com/asalvadorc/BBDD_POSTGRES_DCL/2-TCL/" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>2. TCL - BD - Bases de Dades</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../css/extra.css" rel="stylesheet" />
+        <link href="../img/favicon.ico" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "2. TCL";
+        var mkdocs_page_input_path = "2-TCL.md";
+        var mkdocs_page_url = "/asalvadorc/BBDD_POSTGRES_DCL/2-TCL/";
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="..">
+          <img src="../assets/logocaminas.png" class="logo" alt="Logo"/>
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">POSTGRESQL - DCL</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../1_introducci/">0. Introducció</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../1-DCL/">1. DCL</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../1-DCLv2/">1. DCL</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../1.1-Practica/">1.1 Práctica</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">2. TCL</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#les-transaccions">Les transaccions</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#definir-una-transaccio">DEFINIR UNA TRANSACCIÓ</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#inici-de-transaccio">INICI DE TRANSACCIÓ</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#fi-de-transaccio">FI DE TRANSACCIÓ</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#punts-de-seguretat">PUNTS DE SEGURETAT</a>
+    </li>
+        </ul>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">BD - Bases de Dades</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">POSTGRESQL - DCL</li>
+      <li class="breadcrumb-item active">2. TCL</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="el-llenguatge-de-tcl">El llenguatge de .... TCL</h1>
+<h2 id="les-transaccions">Les transaccions</h2>
+<p>Quan s’han de dur a terme un conjunt de sentències de definició (amb DDL) o de manipulació de dades (amb DML) que estan estretament lligades entre elles, caldrà que siguin executades com si es tractés d’una sola sentència. Si es poden executar totes de manera satisfactòria, llavors la transacció es donarà per finalitzada i es validaran els canvis duts a terme a la base de dades. En cas contrari, caldrà desfer tots els canvis i deixar la base de dades igual que si cap de les sentències executades no s’hagués començat.</p>
+<p><em>Exemple de transacció</em>:</p>
+<p><em>Per exemple, si es vol fer una compra d’una entrada per a un espectacle en un portal web, primer caldrà mostrar quantes entrades queden lliures, mostrar els seients lliures i els preus, permetre a l’usuari que triï quin l’interessa. Si l’usuari vol, finalment, comprar uns seients determinats, el sistema haurà de validar que el pagament ha estat correcte, indicar que els seients es troben ocupats, rebaixar el nombre total de seients lliures…</em></p>
+<p><em>Si durant tot aquest procés alguna de les sentències de manipulació de les dades no s’executés correctament, el sistema quedaria inestable (de manera que no quadrarien, per exemple, els seients oferts i el nombre total de seients disponibles).</em> </p>
+<p><em>Per aquesta raó, és necessari garantir que o bé s’executen totes les sentències de manipulació de dades o no se n’executa cap.</em></p>
+<h4 id="definir-una-transaccio">DEFINIR UNA TRANSACCIÓ</h4>
+<p><strong>Es pot definir que una <u>transacció</u> és un conjunt d’instruccions que formen una unitat lògica de treball, una unitat atòmica que es garanteix que s’executarà completament o no s’executarà.</strong></p>
+<h5 id="inici-de-transaccio">INICI DE TRANSACCIÓ</h5>
+<p>Per limitar les instruccions que poden formar part d’una transacció es pot començar amb la primera ordre SQL o es pot fer servir la sentència <code>BEGIN</code>  o <code>START TRANSACTION</code> que indicarà que tot el que hi hagi a continuació fins a trobar-se la sentència de finalització s’entendrà com una unitat atòmica.</p>
+<p>Tot el que hi hagi a continuació del <code>BEGIN</code> no tindrà una execució física fins que no s’arribi al final de la transacció. D’aquesta manera es garanteix que, en cas de fallada del sistema (disc complet, tall d’energia, fallada del maquinari…), la base de dades es veurà alterada per totes les sentències o per cap.</p>
+<h5 id="fi-de-transaccio">FI DE TRANSACCIÓ</h5>
+<p>Les dues sentències que poden finalitzar el contenidor de sentències que formen la transacció poden ser:</p>
+<p><strong>1. Confirmar la transacció (guardar els canvis)</strong></p>
+<p><code>COMMIT</code>: aquesta sentència executarà, seguint el mateix ordre establert, totes les sentències incloses dins del establert com a transacció.</p>
+<p>Una vegada finalitzada l’execució de totes les sentències se’n podrà començar una de nova.</p>
+<p>La seva sintaxi és:</p>
+<div class="highlight"><pre><span></span><code>COMMIT [WORK | TRANSACTION]
+</code></pre></div>
+<p>La paraula <em>Work</em> és opcional.</p>
+<p><strong>2.Desfer la transacció (revertir els canvis)</strong></p>
+<p><code>ROLLBACK</code>: aquesta sentència permet desfer una sèrie de consultes que s’hagin anat executant però que no s’hagin confirmat amb la sentència <code>COMMIT</code>. Les operacions que es podran desfer són les de:</p>
+<ul>
+<li><code>INSERT</code>,</li>
+<li><code>UPDATE</code>,</li>
+<li><code>DELETE</code>.</li>
+</ul>
+<p>Trobant una sentència <code>``ROLLBACK</code> es desfaran totes les modificacions fetes sobre la base de dades fins a trobar el darrer estat estable. Serà com fer servir la funcionalitat <code>UNDO</code> dels programes ofimàtics.</p>
+<p>La seva sintaxi és:</p>
+<div class="highlight"><pre><span></span><code>ROLLBACK [WORK | TRANSACTION]
+[SAVEPOINT savepointname]
+</code></pre></div>
+<p>La paraula <em>Work</em> és opcional.</p>
+<h5 id="punts-de-seguretat">PUNTS DE SEGURETAT</h5>
+<p>Un <em><code>SAVEPOINT</code></em> permetrà fer una utilització més fina de les transaccions. Si es marquen un o diversos punts de seguretat al llarg del codi, segons interessi es podrà fer un <code>ROLLBACK</code> no fins al principi de la transacció, sinó fins al punt de seguretat que sigui més adient. En el cas de fer servir aquesta instrucció, el <code>ROLLBACK</code> restablirà el conjunt de dades fins al punt especificat.</p>
+<p>D’aquesta manera, quan es van executant les consultes que es troben a partir d’una sentència <code>BEGIN</code>, aquestes no representaran una execució física sobre la base de dades. Les taules afectades es veuran modificades de manera lògica, i no es confirmaran les alteracions fins a arribar a la sentència <code>COMMIT</code> o es descartaran en arribar a la sentència <code>ROLLBACK</code>.</p>
+<p>Què succeeix si una transacció començada no finalitza, és a dir, s’arriba al final del programa sense cap ordre d’acceptació o confirmació o de desfer? La norma no especifica quina de les dues accions pot tenir lloc, així que dependrà de la implementació del sistema gestor de base de dades.</p>
+<p><em>Exemple de transacció començada no finalitzada</em>:</p>
+<p><em>Tenim una base de dades relacional amb les relacions de productes i proveïdors. En un moment determinat, un proveïdor ha de tancar la seva empresa. Caldrà actualitzar la base de dades de tal manera que els productes vinculats amb el proveïdor també s’esborrin de la base de dades (o passin a una altra relació amb dades històriques). Es podria dur a terme l’execució següent:</em></p>
+<div class="highlight"><pre><span></span><code>BEGIN TRANSACTION
+DELETE FROM Proveïdors WHERE PK_Codi_Proveïdor  = 3
+DELETE FROM Productes WHERE FK_Proveïdor =3
+COMMIT TRANSACTION
+</code></pre></div>
+<p><em>En el cas de fallada de sistema després del primer <code>DELETE</code>, si no s’hagués implementat amb transaccions, s’hauria esborrat el proveïdor però els productes dependents d’aquell proveïdor continuarien en la taula de manera incorrecta.</em></p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../1.1-Practica/" class="btn btn-neutral float-left" title="1.1 Práctica"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../1.1-Practica/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

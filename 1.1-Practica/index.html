@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://github.com/asalvadorc/BBDD_POSTGRES_DCL/1.1-Practica/" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>1.1 Práctica - BD - Bases de Dades</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../css/extra.css" rel="stylesheet" />
+        <link href="../img/favicon.ico" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "1.1 Pr\u00e1ctica";
+        var mkdocs_page_input_path = "1.1-Practica.md";
+        var mkdocs_page_url = "/asalvadorc/BBDD_POSTGRES_DCL/1.1-Practica/";
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="..">
+          <img src="../assets/logocaminas.png" class="logo" alt="Logo"/>
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">POSTGRESQL - DCL</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../1_introducci/">0. Introducció</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../1-DCL/">1. DCL</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../1-DCLv2/">1. DCL</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">1.1 Práctica</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#gestion-de-usuarios-roles-y-permisos">Gestión de usuarios, roles y permisos</a>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../2-TCL/">2. TCL</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">BD - Bases de Dades</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">POSTGRESQL - DCL</li>
+      <li class="breadcrumb-item active">1.1 Práctica</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="practica-dcl-postgresql">🛒 PRÁCTICA DCL POSTGRESQL</h1>
+<h2 id="gestion-de-usuarios-roles-y-permisos">Gestión de usuarios, roles y permisos</h2>
+<p>En esta práctica vas a diseñar un sistema de control de acceso para una base de datos de una tienda utilizando <strong>roles</strong> y <strong>permisos</strong> en PostgreSQL.</p>
+<p>El objetivo es que cada tipo de usuario solo pueda realizar las operaciones que le correspondan según su función.</p>
+<hr />
+<h1 id="objetivos">🎯 Objetivos</h1>
+<ul>
+<li>Crear una base de datos con un esquema propio</li>
+<li>Gestionar roles como grupos de permisos</li>
+<li>Asignar permisos sobre tablas</li>
+<li>Asociar usuarios a roles</li>
+<li>Comprobar que cada usuario solo puede hacer lo que le corresponde</li>
+</ul>
+<hr />
+<h1 id="1-crear-la-base-de-datos">🧱 1. Crear la base de datos</h1>
+<p>Crea una base de datos llamada: tienda</p>
+<hr />
+<h1 id="2-crear-un-esquema-propio">📁 2. Crear un esquema propio</h1>
+<p>Crea un esquema llamado: app</p>
+<hr />
+<h1 id="3-seguridad-basica">🔒 3. Seguridad básica</h1>
+<p>Impide que cualquier usuario pueda crear objetos en el esquema <code>public</code>.</p>
+<hr />
+<h1 id="4-crear-las-tablas">📦 4. Crear las tablas</h1>
+<p>Dentro del esquema <code>app</code>, crea:</p>
+<h3 id="tabla-productos">Tabla productos</h3>
+<p>Debe contener:</p>
+<ul>
+<li>id</li>
+<li>nombre</li>
+<li>stock</li>
+</ul>
+<h3 id="tabla-ventas">Tabla ventas</h3>
+<p>Debe contener:</p>
+<ul>
+<li>id</li>
+<li>producto_id</li>
+<li>unidades</li>
+<li>fecha</li>
+</ul>
+<hr />
+<h1 id="5-crear-los-roles-grupos">👥 5. Crear los roles (grupos)</h1>
+<p>Crea los siguientes roles:</p>
+<ul>
+<li>rol_consulta</li>
+<li>rol_almacen</li>
+<li>rol_tpvs</li>
+<li>rol_admin</li>
+</ul>
+<hr />
+<h1 id="6-permitir-acceso-al-esquema">🔑 6. Permitir acceso al esquema</h1>
+<p>Todos los roles deben poder acceder al esquema <code>app</code>.</p>
+<hr />
+<h1 id="7-asignar-permisos-segun-funcion">🛠️ 7. Asignar permisos según función</h1>
+<p>Cada rol debe tener los siguientes permisos:</p>
+<h3 id="rol_consulta">🔍 rol_consulta</h3>
+<ul>
+<li>Solo puede consultar productos</li>
+</ul>
+<hr />
+<h3 id="rol_almacen">📦 rol_almacen</h3>
+<ul>
+<li>Puede consultar productos</li>
+<li>Puede actualizar el stock</li>
+</ul>
+<hr />
+<h3 id="rol_tpvs">🛒 rol_tpvs</h3>
+<ul>
+<li>Puede consultar productos</li>
+<li>Puede registrar ventas</li>
+</ul>
+<hr />
+<h3 id="rol_admin">👑 rol_admin</h3>
+<ul>
+<li>Debe tener control total sobre las tablas del esquema</li>
+</ul>
+<hr />
+<h1 id="8-secuencias">🔄 8. Secuencias</h1>
+<p>Asegúrate de que los roles que insertan datos puedan usar las secuencias necesarias.</p>
+<hr />
+<h1 id="9-crear-usuarios">👤 9. Crear usuarios</h1>
+<p>Crea los siguientes usuarios:</p>
+<ul>
+<li>user_consulta</li>
+<li>user_almacen</li>
+<li>user_tpvs</li>
+<li>user_admin</li>
+</ul>
+<hr />
+<h1 id="10-asociar-usuarios-a-roles">🔗 10. Asociar usuarios a roles</h1>
+<p>Cada usuario debe pertenecer a su rol correspondiente.</p>
+<hr />
+<h1 id="11-pruebas">🧪 11. Pruebas</h1>
+<p>Comprueba el comportamiento conectándote como cada usuario.</p>
+<hr />
+<h2 id="user_consulta">🔍 user_consulta</h2>
+<p>Debe poder:</p>
+<ul>
+<li>Consultar productos</li>
+</ul>
+<p>No debe poder:</p>
+<ul>
+<li>Modificar stock</li>
+<li>Insertar ventas</li>
+</ul>
+<hr />
+<h2 id="user_almacen">📦 user_almacen</h2>
+<p>Debe poder:</p>
+<ul>
+<li>Consultar productos</li>
+<li>Actualizar stock</li>
+</ul>
+<p>No debe poder:</p>
+<ul>
+<li>Registrar ventas</li>
+</ul>
+<hr />
+<h2 id="user_tpvs">🛒 user_tpvs</h2>
+<p>Debe poder:</p>
+<ul>
+<li>Consultar productos</li>
+<li>Insertar ventas</li>
+</ul>
+<p>No debe poder:</p>
+<ul>
+<li>Modificar stock</li>
+</ul>
+<hr />
+<h2 id="user_admin">👑 user_admin</h2>
+<p>Debe poder:</p>
+<ul>
+<li>Consultar</li>
+<li>Insertar</li>
+<li>Modificar</li>
+<li>Borrar</li>
+</ul>
+<hr />
+<h1 id="12-usuario-auditor-opcional">🕵️ 12. Usuario auditor (opcional)</h1>
+<p>Crea un usuario que:</p>
+<ul>
+<li>No pertenezca a ningún rol creado</li>
+<li>Pueda leer todos los datos</li>
+<li>No pueda modificarlos</li>
+</ul>
+<hr />
+<h1 id="13-verificacion">🧰 13. Verificación</h1>
+<p>Comprueba los permisos existentes sobre las tablas.</p>
+<hr />
+<h1 id="reflexion-final">🧠 Reflexión final</h1>
+<p>Responde:</p>
+<blockquote>
+<p>¿Qué ventaja tiene asignar permisos a roles en lugar de a usuarios?</p>
+</blockquote>
+<h1 id="practica-dcl-postgresql-solucion">🛒 PRÁCTICA DCL POSTGRESQL (SOLUCIÓN)</h1>
+<h2 id="bd-tienda-esquema-app">BD: tienda | Esquema: app</h2>
+<hr />
+<h2 id="1-crear-base-de-datos">1) Crear base de datos</h2>
+<pre><code>```sql
+CREATE DATABASE tienda;
+```
+</code></pre>
+<hr />
+<h2 id="2-crear-esquema-propio">2) Crear esquema propio</h2>
+<pre><code>```sql
+CREATE SCHEMA app;
+```
+</code></pre>
+<hr />
+<h2 id="3-bloquear-creacion-en-public">3) Bloquear creación en public</h2>
+<pre><code>```sql
+REVOKE CREATE ON SCHEMA public FROM PUBLIC;
+```
+</code></pre>
+<hr />
+<h2 id="4-crear-tablas">4) Crear tablas</h2>
+<pre><code>```sql
+CREATE TABLE app.productos (
+    id SERIAL PRIMARY KEY,
+    nombre VARCHAR(50) NOT NULL,
+    stock INT NOT NULL DEFAULT 0
+);
+
+CREATE TABLE app.ventas (
+    id SERIAL PRIMARY KEY,
+    producto_id INT NOT NULL REFERENCES app.productos(id),
+    unidades INT NOT NULL,
+    fecha TIMESTAMP NOT NULL DEFAULT NOW()
+);
+```
+</code></pre>
+<p>Datos de prueba:</p>
+<pre><code>```sql
+INSERT INTO app.productos (nombre, stock) VALUES
+('Teclado', 20),
+('Raton', 15);
+```
+</code></pre>
+<hr />
+<h2 id="5-crear-roles">5) Crear roles</h2>
+<pre><code>```sql
+CREATE ROLE rol_consulta;
+CREATE ROLE rol_almacen;
+CREATE ROLE rol_tpvs;
+CREATE ROLE rol_admin;
+```
+</code></pre>
+<hr />
+<h2 id="6-acceso-al-esquema">6) Acceso al esquema</h2>
+<pre><code>```sql
+GRANT USAGE ON SCHEMA app TO rol_consulta, rol_almacen, rol_tpvs, rol_admin;
+```
+</code></pre>
+<hr />
+<h2 id="7-permisos">7) Permisos</h2>
+<pre><code>```sql
+GRANT SELECT ON app.productos TO rol_consulta;
+GRANT SELECT, UPDATE ON app.productos TO rol_almacen;
+GRANT SELECT ON app.productos TO rol_tpvs;
+GRANT INSERT, SELECT ON app.ventas TO rol_tpvs;
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA app TO rol_admin;
+```
+</code></pre>
+<hr />
+<h2 id="8-secuencias_1">8) Secuencias</h2>
+<pre><code>```sql
+GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA app TO rol_tpvs, rol_admin;
+```
+</code></pre>
+<hr />
+<h2 id="9-usuarios">9) Usuarios</h2>
+<pre><code>```sql
+CREATE USER user_consulta WITH PASSWORD '1234';
+CREATE USER user_almacen  WITH PASSWORD '1234';
+CREATE USER user_tpvs     WITH PASSWORD '1234';
+CREATE USER user_admin    WITH PASSWORD '1234';
+```
+</code></pre>
+<hr />
+<h2 id="10-asignar-roles">10) Asignar roles</h2>
+<pre><code>```sql
+GRANT rol_consulta TO user_consulta;
+GRANT rol_almacen  TO user_almacen;
+GRANT rol_tpvs     TO user_tpvs;
+GRANT rol_admin    TO user_admin;
+```
+</code></pre>
+<hr />
+<h2 id="11-revocar-ejemplo">11) Revocar ejemplo</h2>
+<pre><code>```sql
+REVOKE rol_almacen FROM user_almacen;
+GRANT rol_almacen TO user_almacen;
+```
+</code></pre>
+<hr />
+<h2 id="12-auditor">12) Auditor</h2>
+<pre><code>```sql
+CREATE USER user_auditor WITH PASSWORD '1234';
+GRANT CONNECT ON DATABASE tienda TO user_auditor;
+GRANT pg_read_all_data TO user_auditor;
+```
+</code></pre>
+<hr />
+<h1 id="pruebas">PRUEBAS</h1>
+<h2 id="conexion">Conexión</h2>
+<pre><code>```sql
+GRANT CONNECT ON DATABASE tienda TO
+user_consulta,
+user_almacen,
+user_tpvs,
+user_admin;
+```
+</code></pre>
+<hr />
+<h2 id="user_consulta_1">user_consulta</h2>
+<pre><code>```sql
+SELECT * FROM app.productos;
+```
+</code></pre>
+<p>Debe fallar:</p>
+<pre><code>```sql
+UPDATE app.productos SET stock = 10 WHERE id = 1;
+INSERT INTO app.ventas (producto_id, unidades) VALUES (1,2);
+```
+</code></pre>
+<hr />
+<h2 id="user_almacen_1">user_almacen</h2>
+<pre><code>```sql
+SELECT * FROM app.productos;
+UPDATE app.productos SET stock = stock + 5 WHERE id = 1;
+```
+</code></pre>
+<p>Debe fallar:</p>
+<pre><code>```sql
+INSERT INTO app.ventas (producto_id, unidades) VALUES (1,2);
+```
+</code></pre>
+<hr />
+<h2 id="user_tpvs_1">user_tpvs</h2>
+<pre><code>```sql
+SELECT * FROM app.productos;
+INSERT INTO app.ventas (producto_id, unidades) VALUES (1,3);
+```
+</code></pre>
+<p>Debe fallar:</p>
+<pre><code>```sql
+UPDATE app.productos SET stock = 5 WHERE id = 1;
+```
+</code></pre>
+<hr />
+<h2 id="user_auditor">user_auditor</h2>
+<pre><code>```sql
+SELECT * FROM app.productos;
+SELECT * FROM app.ventas;
+```
+</code></pre>
+<p>Debe fallar:</p>
+<pre><code>```sql
+UPDATE app.productos SET stock = 99 WHERE id = 1;
+```
+</code></pre>
+<hr />
+<h2 id="user_admin_1">user_admin</h2>
+<pre><code>```sql
+SELECT * FROM app.productos;
+UPDATE app.productos SET stock = 99 WHERE id = 1;
+INSERT INTO app.ventas (producto_id, unidades) VALUES (1,1);
+DELETE FROM app.ventas WHERE id = 1;
+```
+</code></pre>
+<hr />
+<h2 id="ver-permisos">Ver permisos</h2>
+<pre><code>```sql
+SELECT
+r.rolname,
+ARRAY(SELECT b.rolname
+FROM pg_catalog.pg_auth_members m
+JOIN pg_catalog.pg_roles b ON (m.roleid = b.oid)
+WHERE m.member = r.oid ) as memberof
+FROM pg_catalog.pg_roles r
+ORDER BY 1;
+```
+</code></pre>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../1-DCLv2/" class="btn btn-neutral float-left" title="1. DCL"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../2-TCL/" class="btn btn-neutral float-right" title="2. TCL">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../1-DCLv2/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../2-TCL/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
