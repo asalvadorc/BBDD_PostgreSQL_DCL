@@ -125,8 +125,9 @@ Los privilegios pueden ser:
 * **INDEX**: asigna el permiso de creación de índices para una tabla concreta o para un usuario.
 * **ALTER**: asigna el permiso de modificación de la estructura de una tabla o a un usuario.
 
-Un objeto puede ser una tabla o una vista.
-Un user se refiere a un usuario concreto.
+Un **objeto** puede ser una tabla o una vista.
+
+Un **user** se refiere a un usuario concreto.
 
 Por ejemplo:
 
@@ -163,7 +164,7 @@ Las opciones RESTRICT/CASCADE permiten extender o detener la aplicación de la s
 
 **Cuando creamos una nueva base de datos**, PostgreSQL crea de forma predeterminada un esquema denominado **public** y concede acceso en este esquema a un **rol de backend denominado public**. A todos los usuarios y roles nuevos se les concede de forma predeterminada el **rol public** y, por lo tanto, pueden crear objetos en el esquema public.
 
-Si un usuario crea una tabla sin indicar el esquema, se guarda en public.
+Si un usuario crea una tabla sin indicar el esquema, se guarda en **public**.  
 Por defecto, todos los usuarios pueden crear objetos en este esquema, lo que impide tener usuarios realmente de solo lectura, ya que heredan ese permiso del rol public.
 
 Para solucionarlo, se debe **revocar el permiso de creación predeterminado en el esquema public desde el rol public** mediante la siguiente instrucción SQL:
@@ -171,7 +172,7 @@ Para solucionarlo, se debe **revocar el permiso de creación predeterminado en e
     REVOKE CREATE ON SCHEMA public FROM PUBLIC;
 
 
-Nos aseguraremos de ser el propietario del esquema public o de formar parte de un rol que le permita ejecutar esta instrucción SQL.  
+Nos aseguraremos de ser el propietario del esquema public ha de formar parte de un rol que le permita ejecutar esta instrucción SQL.  
 La siguiente declaración **revoca la capacidad del rol público de conectarse a la base de datos**:
 
     REVOKE ALL ON DATABASE mydatabase FROM PUBLIC;

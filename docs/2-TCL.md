@@ -1,86 +1,113 @@
-# El llenguatge de .... TCL
+# El lenguaje de control de transacciones (TCL)
 
-## Les transaccions
+## Las transacciones
 
-Quan s’han de dur a terme un conjunt de sentències de definició (amb DDL) o de manipulació de dades (amb DML) que estan estretament lligades entre elles, caldrà que siguin executades com si es tractés d’una sola sentència. Si es poden executar totes de manera satisfactòria, llavors la transacció es donarà per finalitzada i es validaran els canvis duts a terme a la base de dades. En cas contrari, caldrà desfer tots els canvis i deixar la base de dades igual que si cap de les sentències executades no s’hagués començat.
+Cuando se debe llevar a cabo un conjunto de sentencias de definición (DDL) o de manipulación de datos (DML) que están estrechamente ligadas entre sí, será necesario que se ejecuten como si se tratara de una sola sentencia.
 
-*Exemple de transacció*:
+Si todas se pueden ejecutar satisfactoriamente, entonces la transacción se dará por finalizada y se validarán los cambios realizados en la base de datos. En caso contrario, será necesario deshacer todos los cambios y dejar la base de datos como si ninguna de las sentencias se hubiera ejecutado.
 
-*Per exemple, si es vol fer una compra d’una entrada per a un espectacle en un portal web, primer caldrà mostrar quantes entrades queden lliures, mostrar els seients lliures i els preus, permetre a l’usuari que triï quin l’interessa. Si l’usuari vol, finalment, comprar uns seients determinats, el sistema haurà de validar que el pagament ha estat correcte, indicar que els seients es troben ocupats, rebaixar el nombre total de seients lliures…*
+**Ejemplo** de transacción:
 
-*Si durant tot aquest procés alguna de les sentències de manipulació de les dades no s’executés correctament, el sistema quedaria inestable (de manera que no quadrarien, per exemple, els seients oferts i el nombre total de seients disponibles).* 
+Por ejemplo, si se quiere comprar una entrada para un espectáculo en un portal web, primero será necesario mostrar cuántas entradas quedan libres, los asientos disponibles y los precios, y permitir que el usuario elija cuál le interesa.
 
-*Per aquesta raó, és necessari garantir que o bé s’executen totes les sentències de manipulació de dades o no se n’executa cap.*
+Si finalmente el usuario decide comprar determinados asientos, el sistema deberá:
 
-#### DEFINIR UNA TRANSACCIÓ
+* Validar que el pago ha sido correcto
+* Marcar los asientos como ocupados
+* Reducir el número total de asientos disponibles
 
-**Es pot definir que una <u>transacció</u> és un conjunt d’instruccions que formen una unitat lògica de treball, una unitat atòmica que es garanteix que s’executarà completament o no s’executarà.**
+Si durante este proceso alguna de las sentencias de manipulación de datos no se ejecutara correctamente, el sistema quedaría inconsistente (por ejemplo, no coincidirían los asientos ocupados con el total disponible).
 
-##### INICI DE TRANSACCIÓ
+Por esta razón, es necesario garantizar que o bien se ejecutan todas las sentencias o no se ejecuta ninguna.
 
-Per limitar les instruccions que poden formar part d’una transacció es pot començar amb la primera ordre SQL o es pot fer servir la sentència `BEGIN`  o `START TRANSACTION` que indicarà que tot el que hi hagi a continuació fins a trobar-se la sentència de finalització s’entendrà com una unitat atòmica.
+### Definir una transacción
 
-Tot el que hi hagi a continuació del `BEGIN` no tindrà una execució física fins que no s’arribi al final de la transacció. D’aquesta manera es garanteix que, en cas de fallada del sistema (disc complet, tall d’energia, fallada del maquinari…), la base de dades es veurà alterada per totes les sentències o per cap.
+**Una transacción es un conjunto de instrucciones que forman una unidad lógica de trabajo, una unidad atómica que se garantiza que se ejecutará completamente o no se ejecutará.**
+
+#### Inicio de transacción
+
+Para delimitar las instrucciones que forman parte de una transacción, se puede comenzar con la primera orden SQL o utilizar: **BEGIN** o **START TRANSACTION**
+
+
+Esto indicará que todo lo que aparezca a continuación hasta encontrar la sentencia de finalización se considerará una unidad atómica.
+
+Nada de lo que esté después del BEGIN tendrá ejecución física hasta que se llegue al final de la transacción.
+
+De esta manera se garantiza que, en caso de fallo del sistema (disco lleno, corte de energía, fallo de hardware, etc.), la base de datos se verá alterada por **todas las sentencias o por ninguna**.
 
 
 
-##### FI DE TRANSACCIÓ 
+##### Fin de la transacción
 
-Les dues sentències que poden finalitzar el contenidor de sentències que formen la transacció poden ser:
+Las dos sentencias que pueden finalizar una transacción son:
 
-**1. Confirmar la transacció (guardar els canvis)**
+**1. Confirmar la transacción (guardar los cambios)**
 
-`COMMIT`: aquesta sentència executarà, seguint el mateix ordre establert, totes les sentències incloses dins del establert com a transacció.
+`COMMIT`: Esta sentencia ejecutará todas las sentencias incluidas en la transacción en el orden establecido.
 
-Una vegada finalitzada l’execució de totes les sentències se’n podrà començar una de nova.
+Después de su ejecución, se podrá iniciar una nueva transacción.
 
-La seva sintaxi és:
+Sintaxis:
 
 ```
 COMMIT [WORK | TRANSACTION]
 ```
 
-La paraula *Work* és opcional.
+(La palabra WORK es opcional)
 
 
 
-**2.Desfer la transacció (revertir els canvis)**
+**2.Deshacer la transacción (revertir los cambios)**
 
-`ROLLBACK`: aquesta sentència permet desfer una sèrie de consultes que s’hagin anat executant però que no s’hagin confirmat amb la sentència `COMMIT`. Les operacions que es podran desfer són les de:
+`ROLLBACK`: Permite deshacer las operaciones realizadas que aún no se han confirmado con COMMIT.Se pueden revertir operaciones como:
 
 - `INSERT`,
 - `UPDATE`,
 - `DELETE`.
 
-Trobant una sentència ```ROLLBACK` es desfaran totes les modificacions fetes sobre la base de dades fins a trobar el darrer estat estable. Serà com fer servir la funcionalitat `UNDO` dels programes ofimàtics.
+Al ejecutar ROLLBACK, se desharán todas las modificaciones realizadas hasta el último estado estable. Es equivalente al botón "Deshacer" (UNDO) en programas ofimáticos.
 
-La seva sintaxi és:
+Sintaxis:
 
 ```
 ROLLBACK [WORK | TRANSACTION]
 [SAVEPOINT savepointname]
 ```
 
-La paraula *Work* és opcional.
+(La palabra WORK es opcional)
 
-##### PUNTS DE SEGURETAT
+##### Puntos de seguridad (SAVEPOINT)
 
-Un *`SAVEPOINT`* permetrà fer una utilització més fina de les transaccions. Si es marquen un o diversos punts de seguretat al llarg del codi, segons interessi es podrà fer un `ROLLBACK` no fins al principi de la transacció, sinó fins al punt de seguretat que sigui més adient. En el cas de fer servir aquesta instrucció, el `ROLLBACK` restablirà el conjunt de dades fins al punt especificat.
+Un SAVEPOINT permite un control más preciso de las transacciones.
 
-D’aquesta manera, quan es van executant les consultes que es troben a partir d’una sentència `BEGIN`, aquestes no representaran una execució física sobre la base de dades. Les taules afectades es veuran modificades de manera lògica, i no es confirmaran les alteracions fins a arribar a la sentència `COMMIT` o es descartaran en arribar a la sentència `ROLLBACK`.
+Permite marcar puntos intermedios dentro de la transacción para poder hacer un ROLLBACK hasta ese punto y no necesariamente hasta el inicio.
 
-Què succeeix si una transacció començada no finalitza, és a dir, s’arriba al final del programa sense cap ordre d’acceptació o confirmació o de desfer? La norma no especifica quina de les dues accions pot tenir lloc, així que dependrà de la implementació del sistema gestor de base de dades.
+Así:
 
-*Exemple de transacció començada no finalitzada*:
+* Las modificaciones se realizan de forma lógica
+* No se hacen físicas hasta el COMMIT
+* Se pueden descartar con ROLLBACK
 
-*Tenim una base de dades relacional amb les relacions de productes i proveïdors. En un moment determinat, un proveïdor ha de tancar la seva empresa. Caldrà actualitzar la base de dades de tal manera que els productes vinculats amb el proveïdor també s’esborrin de la base de dades (o passin a una altra relació amb dades històriques). Es podria dur a terme l’execució següent:*
+¿Qué sucede si una transacción no finaliza?
 
-```
-BEGIN TRANSACTION
-DELETE FROM Proveïdors WHERE PK_Codi_Proveïdor  = 3
-DELETE FROM Productes WHERE FK_Proveïdor =3
-COMMIT TRANSACTION
-```
+Si se llega al final del programa sin ejecutar COMMIT ni ROLLBACK, la norma no especifica qué ocurre.
 
-*En el cas de fallada de sistema després del primer `DELETE`, si no s’hagués implementat amb transaccions, s’hauria esborrat el proveïdor però els productes dependents d’aquell proveïdor continuarien en la taula de manera incorrecta.*
+Dependerá del sistema gestor de bases de datos.
 
+**Ejemplo de transacción**:
+
+Supongamos una base de datos con las tablas Proveedores y Productos.
+
+Si un proveedor cierra su empresa, será necesario eliminar:
+
+* El proveedor
+* Sus productos asociados
+
+Esto puede hacerse así:
+
+    BEGIN TRANSACTION
+    DELETE FROM Proveedores WHERE PK_Codigo_Proveedor = 3
+    DELETE FROM Productos WHERE FK_Proveedor = 3
+    COMMIT TRANSACTION
+
+Si ocurriera un fallo del sistema después del primer DELETE y no se hubieran usado transacciones, el proveedor se habría eliminado pero los productos seguirían existiendo incorrectamente en la base de datos.
