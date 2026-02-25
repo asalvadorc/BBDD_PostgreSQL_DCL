@@ -24,7 +24,7 @@ Por esta razón, es necesario garantizar que o bien se ejecutan todas las senten
 
 **Una transacción es un conjunto de instrucciones que forman una unidad lógica de trabajo, una unidad atómica que se garantiza que se ejecutará completamente o no se ejecutará.**
 
-#### Inicio de transacción
+### Inicio de transacción
 
 Para delimitar las instrucciones que forman parte de una transacción, se puede comenzar con la primera orden SQL o utilizar: **BEGIN** o **START TRANSACTION**
 
@@ -37,7 +37,7 @@ De esta manera se garantiza que, en caso de fallo del sistema (disco lleno, cort
 
 
 
-##### Fin de la transacción
+### Fin de la transacción
 
 Las dos sentencias que pueden finalizar una transacción son:
 
@@ -76,7 +76,7 @@ ROLLBACK [WORK | TRANSACTION]
 
 (La palabra WORK es opcional)
 
-##### Puntos de seguridad (SAVEPOINT)
+## Puntos de seguridad (SAVEPOINT)
 
 Un SAVEPOINT permite un control más preciso de las transacciones.
 
