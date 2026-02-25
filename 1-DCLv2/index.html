@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://github.com/asalvadorc/BBDD_POSTGRES_DCL/1-DCLv2/" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>1. DCL - BD - Bases de Dades</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../css/extra.css" rel="stylesheet" />
+        <link href="../img/favicon.ico" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "1. DCL";
+        var mkdocs_page_input_path = "1-DCLv2.md";
+        var mkdocs_page_url = "/asalvadorc/BBDD_POSTGRES_DCL/1-DCLv2/";
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="..">
+          <img src="../assets/logocaminas.png" class="logo" alt="Logo"/>
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">POSTGRESQL - DCL</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../1_introducci/">0. Introducción</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">1. DCL</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#esquemas">Esquemas</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#usuarios-grupos-y-roles">Usuarios, grupos y roles</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#seguridad">Seguridad</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#esquema-public-y-rol-public">Esquema public y rol public</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#roles-del-sistema-en-postgresql-los-roles-pg_">Roles del sistema en PostgreSQL: los roles pg_...</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#crear-roles-de-base-de-datos">Crear roles de base de datos</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#rol-de-solo-lectura">Rol de solo lectura</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#rol-de-lectura-y-escritura">Rol de lectura y escritura</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#creacion-de-usuarios-de-base-de-datos">Creación de usuarios de base de datos</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#revocar-o-cambiar-permisos">Revocar o cambiar permisos</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#comprobacion-de-roles-concedidos">Comprobación de roles concedidos</a>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../1.1-Practica/">1.1 Práctica</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../2-TCL/">2. TCL</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../2.1-Practica/">2.1 Práctica</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">BD - Bases de Dades</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">POSTGRESQL - DCL</li>
+      <li class="breadcrumb-item active">1. DCL</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="el-lenguaje-de-control-de-datos-dcl">El lenguaje de control de datos DCL</h1>
+<p>El Data Control Language (DCL – Lenguaje de control de datos) se utiliza para gestionar los permisos y privilegios de acceso a los objetos dentro de una base de datos, estableciendo políticas de seguridad que determinan qué usuarios o roles pueden interactuar con los datos y de qué manera.</p>
+<p>A través del DCL, los administradores de bases de datos pueden otorgar o revocar permisos, asegurando que cada usuario solo pueda realizar las acciones que le han sido expresamente autorizadas. Este control es esencial para proteger la información sensible, evitar accesos no autorizados y mantener la integridad de los datos.</p>
+<hr />
+<h2 id="esquemas">Esquemas</h2>
+<p>Cuando trabajamos con bases de datos en PostgreSQL, no todo está simplemente “dentro” de la base de datos sin orden. Existe un nivel intermedio de organización llamado <strong>esquema</strong>, que cumple una función muy importante.</p>
+<p>Un <strong>esquema</strong> puede entenderse como <strong>una forma de estructurar y separar los distintos objetos</strong> que existen dentro de una misma base de datos. Es decir, <strong>las tablas, vistas, secuencias, funciones o tipos de datos</strong> no se guardan directamente en la base de datos, sino dentro de un esquema.</p>
+<p>Podemos imaginar la base de datos como si fuera un archivador grande. Dentro de ese archivador hay carpetas, y dentro de cada carpeta hay documentos. En este caso, las carpetas serían los esquemas y los documentos serían las tablas u otros objetos.</p>
+<p>Gracias a esto, es posible organizar la información según su función. </p>
+<p><img alt="alt text" src="../image-7.png" /></p>
+<p>Además de servir para organizar, <strong>los esquemas</strong> son fundamentales desde el punto de vista de la <strong>seguridad</strong>. En PostgreSQL, los permisos no se conceden únicamente sobre la base de datos en general, sino sobre elementos concretos. Y esos elementos se encuentran dentro de un esquema. Por tanto, si queremos controlar quién puede acceder a ciertas tablas, lo primero que necesitamos es tener claro en qué esquema se encuentran.</p>
+<p><img alt="alt text" src="../image-5.png" /></p>
+<p>También es importante saber que PostgreSQL crea por defecto un esquema llamado <strong>public</strong>, que es donde se crean los objetos si no se indica ningún otro. Por eso, muchas veces trabajamos sin ser conscientes de que estamos usando un esquema, aunque realmente siempre existe.</p>
+<div class="admonition note">
+<p class="admonition-title">Resumen</p>
+<p><strong>Los esquemas</strong> permiten organizar los objetos de una base de datos y establecer límites claros de acceso. Por este motivo, antes de hablar de usuarios, grupos o roles, es conveniente entender qué son los esquemas, ya que los permisos que se asignan a esos usuarios se aplicarán sobre los objetos contenidos en ellos.</p>
+</div>
+<h2 id="usuarios-grupos-y-roles">Usuarios, grupos y roles</h2>
+<p>Una vez entendido que los objetos de una base de datos se organizan dentro de esquemas, el siguiente paso lógico es plantearse quién puede acceder a esos objetos y qué puede hacer con ellos. Para ello, PostgreSQL utiliza un sistema de control de acceso basado en lo que denomina <strong>roles</strong>.</p>
+<p>A diferencia de otros sistemas gestores de bases de datos, <strong>PostgreSQL no distingue realmente entre usuarios y grupos como entidades diferentes. En su lugar, todo se gestiona mediante roles</strong>. <br />
+Un rol puede comportarse como un usuario, como un grupo o como una combinación de ambos, dependiendo de los permisos que tenga asignados.</p>
+<p>Un rol que tiene permiso para iniciar sesión en el sistema actúa como un usuario. Es decir, representa a una persona o aplicación que puede conectarse a la base de datos. Por otro lado, un rol que no tiene permiso de inicio de sesión puede utilizarse para agrupar permisos. En ese caso, funciona como un grupo.</p>
+<div class="admonition note">
+<p class="admonition-title">ROL</p>
+<p>PostgreSQL usa una única figura llamada <strong>ROL</strong>, que puede comportarse como:</p>
+<ul>
+<li>Usuario → si puede iniciar sesión</li>
+<li>Grupo → si agrupa permisos</li>
+<li>Rol → si solo sirve para gestionar permisos</li>
+</ul>
+</div>
+<p><img alt="alt text" src="../image.png" /></p>
+<p>Esto permite una gestión mucho más flexible de la <strong>seguridad</strong>. En lugar de asignar permisos directamente a cada usuario, lo habitual es crear roles que representen funciones dentro de la organización, como por ejemplo desarrolladores, administrativos o analistas. Después, se asignan permisos a esos roles sobre determinados esquemas o tablas, y finalmente se asocian los usuarios a los roles correspondientes.</p>
+<p>De esta manera, cuando un usuario pasa a formar parte de un rol, hereda automáticamente todos los permisos que dicho rol tenga asignados. Si en algún momento cambian las necesidades de acceso, basta con modificar los permisos del rol en lugar de hacerlo usuario por usuario.</p>
+<p>Este sistema simplifica enormemente la administración de la seguridad, especialmente cuando el número de usuarios crece. Además, permite reflejar la estructura real de una organización dentro de la base de datos, separando claramente quién puede conectarse al sistema y qué puede hacer una vez dentro.</p>
+<div class="admonition note">
+<p class="admonition-title">Resumen</p>
+<p>En definitiva, <strong>los roles</strong> son el mecanismo que utiliza PostgreSQL para gestionar la autenticación y los permisos. Gracias a ellos, es posible controlar el acceso a los distintos esquemas y objetos de forma organizada y escalable.</p>
+</div>
+<p>Las instrucciones <strong>CREATE USER</strong> y <strong>CREATE GROUP</strong> son en realidad alias de la instrucción <strong>CREATE ROLE</strong>.<br />
+Para crear un usuario de PostgreSQL, utilizaremos la siguiente instrucción SQL:</p>
+<pre><code>CREATE USER myuser WITH PASSWORD 'passwd';
+</code></pre>
+<p>También se podría crear un usuario con la siguiente instrucción SQL:</p>
+<pre><code>CREATE ROLE myuser WITH LOGIN PASSWORD ‘passwd’;
+</code></pre>
+<p>Ambas sentencias crean exactamente el mismo usuario.<br />
+Este nuevo usuario no tiene ningún permiso, a excepción de los permisos predeterminados disponibles para el rol public.  <br />
+Todos los nuevos usuarios y roles heredan los permisos del rol public. </p>
+<p>Un grupo es un rol que se usa para dar permisos a varios usuarios a la vez:</p>
+<pre><code>CREATE ROLE mygroup;
+</code></pre>
+<p>Luego añadimos usuarios:</p>
+<pre><code>GRANT mygroup TO myuser;
+</code></pre>
+<p>Ahora <em>myuser</em> hereda permisos del grupo <em>mygroup</em></p>
+<h2 id="seguridad">Seguridad</h2>
+<p>El propietario de la base de datos es quien tiene todos los privilegios, pero no es el único que accede a ella. A una base de datos pueden acceder muchas personas, que muchas veces quizá no tengan nada que ver entre sí o no se conozcan al realizar accesos remotos por diferentes motivos.</p>
+<p>Por ejemplo, a una base de datos con el stock de productos de una distribuidora con muchas tiendas ubicadas en distintas poblaciones podrán acceder para manipular o consultar datos personas tan distintas como:</p>
+<ul>
+<li><strong>Receptores de productos</strong> en los almacenes, para actualizar los stocks.</li>
+<li><strong>Trabajadores para consultar</strong> si hay stock de un producto determinado.</li>
+<li><strong>Las máquinas registradoras</strong>, automáticamente, para actualizar el stock después de una venta.</li>
+<li><strong>Los encargados de compras</strong>, para consultar la situación y tomar decisiones.</li>
+<li><strong>Los trabajadores del departamento</strong> de control para tomar otro tipo de decisiones.</li>
+<li><strong>Los clientes finales</strong>, desde sus casas, consultando si pueden ir a comprar ese producto determinado.</li>
+</ul>
+<p>Como se ve en esta situación, pueden llegar a ser muchas las manos que accedan a los datos. Pero no será lo mismo lo que debe poder ver un cliente final desde su casa que lo que debe ver un trabajador del departamento de control. Por esta razón, es importante asignar una serie de privilegios a los usuarios que acceden a los datos, de tal manera que cada usuario tenga un perfil asignado con unos permisos determinados sobre la base de datos, en global, y sobre las relaciones, en particular.</p>
+<p>La asignación de los privilegios se puede llevar a cabo desde dos posibles puntos de vista:</p>
+<ul>
+<li>Desde el punto de vista del usuario.</li>
+<li>Desde el punto de vista de las tablas o las vistas.</li>
+</ul>
+<p>La sentencia que se utiliza en ambos casos para asignar permisos es la sentencia <strong>GRANT</strong>.</p>
+<p>Su sintaxis es:</p>
+<pre><code>GRANT { &lt;Privilegi1&gt; [, &lt; Privilegi2&gt; ..] } | ALL
+ON [&lt;User1&gt;.]&lt;Objecte&gt;
+TO {&lt;User2&gt; [, &lt;User3&gt; ...]} | PUBLIC.
+</code></pre>
+<p>Los privilegios pueden ser:</p>
+<ul>
+<li><strong>ALL</strong>: asigna todos los permisos posibles a una tabla o a una vista.</li>
+<li><strong>SELECT</strong>: asigna el permiso de realizar consultas (leer) a un usuario o sobre una tabla concreta.</li>
+<li><strong>INSERT</strong>: asigna el permiso de inserción de datos a un usuario o sobre una tabla concreta.</li>
+<li><strong>UPDATE</strong>: asigna el permiso de modificación de datos a un usuario o sobre una tabla concreta.</li>
+<li><strong>DELETE</strong>: asigna el permiso de borrado de datos a un usuario o sobre una tabla concreta.</li>
+<li><strong>INDEX</strong>: asigna el permiso de creación de índices para una tabla concreta o para un usuario.</li>
+<li><strong>ALTER</strong>: asigna el permiso de modificación de la estructura de una tabla o a un usuario.</li>
+</ul>
+<p>Un <strong>objeto</strong> puede ser una tabla o una vista.</p>
+<p>Un <strong>user</strong> se refiere a un usuario concreto.</p>
+<p>Por ejemplo:</p>
+<pre><code>GRANT SELECT
+ON Productes
+TO Joan
+</code></pre>
+<p>En este ejemplo se otorga el permiso de consulta al usuario Joan sobre la tabla Productos.</p>
+<p>La sentencia que se utiliza para quitar los permisos a un usuario determinado o sobre una tabla determinada es REVOKE.</p>
+<p>Su sintaxis es:</p>
+<pre><code>REVOKE {ALL | SELECT | INSERT | DELETE | INDEX | ALTER |
+UPDATE | UPDATE(&lt;Columna1&gt; [, &lt;Columna2&gt; ...])}
+ON {&lt;Tabla&gt; | &lt;Vista&gt;}
+FROM {PUBLIC | &lt;Usuario1&gt; [, &lt;Usuario2&gt; ...]}
+{RESTRICT/CASCADE}
+</code></pre>
+<p>Un ejemplo de utilización de la sentencia REVOKE es:</p>
+<pre><code>REVOKE ALL
+ON Proveedores
+TO Joan
+</code></pre>
+<p>En este caso, ahora se eliminan todos los privilegios sobre la tabla Proveedores al usuario Joan, que no podrá ni acceder a registros de esta tabla, ni modificarlos, ni borrarlos.</p>
+<p>Las opciones RESTRICT/CASCADE permiten extender o detener la aplicación de la sentencia REVOKE a lo largo de los usuarios a los que se hayan ido concediendo permisos. Es decir, si un usuario B dio permisos al usuario C para acceder a una tabla determinada y ahora el usuario B recibe una sentencia que revoca sus privilegios para acceder a esta tabla con la indicación CASCADE, automáticamente el usuario C perderá también los privilegios de acceso a dicha tabla.</p>
+<h2 id="esquema-public-y-rol-public">Esquema public y rol public</h2>
+<p><strong>Cuando creamos una nueva base de datos</strong>, PostgreSQL crea de forma predeterminada un esquema denominado <strong>public</strong> y concede acceso en este esquema a un <strong>rol de backend denominado public</strong>. A todos los usuarios y roles nuevos se les concede de forma predeterminada el <strong>rol public</strong> y, por lo tanto, pueden crear objetos en el esquema public.</p>
+<p>Si un usuario crea una tabla sin indicar el esquema, se guarda en <strong>public</strong>.<br />
+Por defecto, todos los usuarios pueden crear objetos en este esquema, lo que impide tener usuarios realmente de solo lectura, ya que heredan ese permiso del rol public.</p>
+<p>Para solucionarlo, se debe <strong>revocar el permiso de creación predeterminado en el esquema public desde el rol public</strong> mediante la siguiente instrucción SQL:</p>
+<pre><code>REVOKE CREATE ON SCHEMA public FROM PUBLIC;
+</code></pre>
+<p>Nos aseguraremos de ser el propietario del esquema public ha de formar parte de un rol que le permita ejecutar esta instrucción SQL.<br />
+La siguiente declaración <strong>revoca la capacidad del rol público de conectarse a la base de datos</strong>:</p>
+<pre><code>REVOKE ALL ON DATABASE mydatabase FROM PUBLIC;
+</code></pre>
+<p>Al quitar los permisos del rol public, los usuarios ya no podrán conectarse ni crear objetos por defecto.
+Por eso, antes de hacerlo en producción, hay que dar permisos explícitos a quienes sí los necesiten.</p>
+<h2 id="roles-del-sistema-en-postgresql-los-roles-pg_">Roles del sistema en PostgreSQL: los roles pg_...</h2>
+<p>Al crear una instalación de PostgreSQL, además de los usuarios que el administrador pueda definir, el sistema incorpora automáticamente una serie de roles internos cuyos nombres comienzan por el prefijo <strong>pg_</strong>. Estos roles no representan usuarios reales ni están pensados para iniciar sesión en la base de datos, sino que forman parte del propio mecanismo de seguridad del sistema.</p>
+<p>Estos roles se emplean asignándolos a otros usuarios o roles creados por el administrador. De este modo, es posible otorgar capacidades específicas, como consultar información global o supervisar la actividad del servidor, sin necesidad de conceder privilegios de superusuario.</p>
+<p>Por tanto, su función principal es servir como mecanismos de delegación de permisos concretos. Gracias a ellos, se puede proporcionar a un usuario únicamente las capacidades necesarias para su trabajo, manteniendo al mismo tiempo un control más seguro sobre el sistema.</p>
+<p>En definitiva, los roles <strong>pg_</strong> no se crean ni se alteran, sino que se utilizan mediante su asignación a otros roles para distribuir privilegios de forma controlada.</p>
+<h2 id="crear-roles-de-base-de-datos">Crear roles de base de datos</h2>
+<p>A continuación, se detalla el proceso de creación de nuevos roles y concesión de permisos para acceder a varios objetos de base de datos. Los permisos debemos concederlos a nivel de base de datos, esquema y objeto de esquema. Por ejemplo, si necesitamos conceder acceso a una tabla, también debemos asegurarnos de que el rol tenga acceso a la base de datos y al esquema en que existe la tabla. Si falta alguno de los permisos, el usuario/rol no podrá acceder a la tabla.</p>
+<h3 id="rol-de-solo-lectura">Rol de solo lectura</h3>
+<p>El primer paso consiste en crear un nuevo rol denominado <code>readonly</code> mediante la siguiente instrucción SQL:</p>
+<pre><code>CREATE ROLE readonly;
+</code></pre>
+<p>Este es un rol simple sin permisos ni contraseña. No se puede utilizar para iniciar sesión en la base de datos.</p>
+<p>Concedemos permiso a este rol para conectarse a la base de datos de destino denominada "mydatabase":</p>
+<pre><code>GRANT CONNECT ON DATABASE mydatabase TO readonly;
+</code></pre>
+<p>El siguiente paso es otorgar acceso al uso de este rol a su esquema. Supongamos que el esquema se llama "myschema":</p>
+<pre><code>GRANT USAGE ON SCHEMA myschema TO readonly;
+</code></pre>
+<p>En este paso se concede permiso de rol de <code>readonly</code> para realizar alguna actividad dentro del esquema. Sin este paso, el rol <code>readonly</code> no puede realizar ninguna acción en los objetos de este esquema, incluso si se han concedido permisos para esos objetos.</p>
+<p>El siguiente paso consiste en otorgar acceso al rol <code>readonly</code> para ejecutar las consultas en las tablas requeridas.</p>
+<pre><code>GRANT SELECT ON TABLE mytable1, mytable2 TO readonly;
+</code></pre>
+<p>Si el requisito es conceder acceso a todas las tablas y vistas del esquema, podemos utilizar el siguiente SQL:</p>
+<pre><code>GRANT SELECT ON ALL TABLES IN SCHEMA myschema TO readonly;
+</code></pre>
+<p>La instrucción SQL anterior otorga acceso SELECT al rol de solo lectura en todas las tablas y vistas existentes en el esquema llamado "myschema". Debemos tener en cuenta que el usuario readonly no podrá acceder a las tablas nuevas que se añadan en el futuro.<br />
+Para garantizar que también pueda acceder a nuevas tablas y vistas, deberemos ejecutar la siguiente instrucción para conceder permisos automáticamente:</p>
+<pre><code>ALTER DEFAULT PRIVILEGES IN SCHEMA myschema GRANT SELECT ON TABLES TO readonly;
+</code></pre>
+<h3 id="rol-de-lectura-y-escritura">Rol de lectura y escritura</h3>
+<p>El proceso de agregar un rol de lectura/escritura es muy similar al proceso de rol de solo lectura que se trató anteriormente. El primer paso es crear un rol:</p>
+<pre><code>CREATE ROLE readwrite;
+</code></pre>
+<p>Concedemos permiso a este rol para conectarse a la base de datos de destino:</p>
+<pre><code>GRANT CONNECT ON DATABASE mydatabase TO readwrite;
+</code></pre>
+<p>Concedemos privilegio de uso de esquemas:</p>
+<pre><code>GRANT USAGE ON SCHEMA myschema TO readwrite;
+</code></pre>
+<p>Si deseamos permitir que este rol cree nuevos objetos como tablas de este esquema, utilizaremos el siguiente SQL en lugar del anterior:</p>
+<pre><code>GRANT USAGE, CREATE ON SCHEMA myschema TO readwrite;
+</code></pre>
+<p>El siguiente paso sería conceder acceso a las tablas. Como hemos comentado en la sección anterior, la concesión puede realizarse en tablas individuales o en todas las tablas del esquema. Para tablas individuales, utilizaremos el siguiente SQL:</p>
+<pre><code>GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE mytable1, mytable2 TO readwrite;
+</code></pre>
+<p>Para todas las tablas y vistas del esquema:</p>
+<pre><code>GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA myschema TO readwrite;
+</code></pre>
+<p>Para conceder automáticamente permisos sobre tablas y vistas añadidas en el futuro:</p>
+<pre><code>ALTER DEFAULT PRIVILEGES IN SCHEMA myschema
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO readwrite;
+</code></pre>
+<p>Para los roles de lectura y escritura, normalmente existe el requisito de utilizar secuencias también. Podemos dar acceso selectivo de la siguiente manera:</p>
+<pre><code>GRANT USAGE ON SEQUENCE myseq1, myseq2 TO readwrite;
+</code></pre>
+<p>También podemos conceder permiso a todas las secuencias mediante la siguiente instrucción SQL:</p>
+<pre><code>GRANT USAGE ON ALL SEQUENCES IN SCHEMA myschema TO readwrite;
+</code></pre>
+<p>Para conceder permisos automáticamente a las secuencias añadidas en el futuro:</p>
+<pre><code>ALTER DEFAULT PRIVILEGES IN SCHEMA myschema
+GRANT USAGE ON SEQUENCES TO readwrite;
+</code></pre>
+<p>Podremos conceder más o menos permisos en función de los requisitos.<br />
+La documentación del comando GRANT de PostgreSQL proporciona más detalles sobre los objetos en los que se pueden conceder permisos y las sentencias SQL necesarias.</p>
+<h2 id="creacion-de-usuarios-de-base-de-datos">Creación de usuarios de base de datos</h2>
+<p>Con los roles implementados, se simplifica el proceso de creación de usuarios. Simplemente crearemos el usuario y le concederemos uno de los roles existentes. Estas son las instrucciones SQL para este proceso:</p>
+<pre><code>CREATE USER user1 WITH PASSWORD ‘passwd’;
+
+GRANT readonly TO user1;
+</code></pre>
+<p>Esta instrucción SQL otorga a myuser1 los mismos permisos que el rol de solo lectura.</p>
+<p>Del mismo modo, podemos conceder acceso de lectura y escritura a un usuario otorgando el rol readwrite. La documentación CREATE USER de PostgreSQL contiene más detalles sobre los parámetros que podemos establecer al crear un usuario. Por ejemplo, podemos especificar un plazo de caducidad para el usuario o permitir que el usuario cree bases de datos.</p>
+<h2 id="revocar-o-cambiar-permisos">Revocar o cambiar permisos</h2>
+<p>Utilizando el método detallado anteriormente, resulta muy fácil revocar los privilegios de un usuario. Por ejemplo, podemos quitar el permiso de lectura y escritura (readwrite) de user1 utilizando la siguiente instrucción SQL:</p>
+<pre><code>REVOKE readwrite FROM user1;
+</code></pre>
+<p>Del mismo modo, podemos otorgar un nuevo rol de la siguiente manera:</p>
+<pre><code>GRANT readonly TO user1;
+</code></pre>
+<h2 id="comprobacion-de-roles-concedidos">Comprobación de roles concedidos</h2>
+<p>Podemos utilizar la siguiente consulta para obtener una lista de todos los usuarios y roles de la base de datos junto con una lista de roles que se les han concedido:</p>
+<pre><code>SELECT
+r.rolname,
+ARRAY(SELECT b.rolname
+FROM pg_catalog.pg_auth_members m
+JOIN pg_catalog.pg_roles b ON (m.roleid = b.oid)
+WHERE m.member = r.oid ) as memberof
+FROM pg_catalog.pg_roles r
+ORDER BY 1;
+</code></pre>
+<p>Debemos tener en cuenta que un usuario puede ser miembro de varios roles con permisos distintos o superpuestos. En este caso, el usuario obtiene una suma de todos los permisos.</p>
+<p>También se puede utilizar la tabla de catálogo pg_roles para comprobar atributos como la fecha de caducidad de la contraseña o el número de conexiones paralelas permitidas.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../1_introducci/" class="btn btn-neutral float-left" title="0. Introducción"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../1.1-Practica/" class="btn btn-neutral float-right" title="1.1 Práctica">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../1_introducci/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../1.1-Practica/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
