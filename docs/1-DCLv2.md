@@ -87,6 +87,78 @@ Luego añadimos usuarios:
    
 Ahora _myuser_ hereda permisos del grupo _mygroup_
 
+## Seguridad
+
+El propietario de la base de datos es quien tiene todos los privilegios, pero no es el único que accede a ella. A una base de datos pueden acceder muchas personas, que muchas veces quizá no tengan nada que ver entre sí o no se conozcan al realizar accesos remotos por diferentes motivos.
+
+Por ejemplo, a una base de datos con el stock de productos de una distribuidora con muchas tiendas ubicadas en distintas poblaciones podrán acceder para manipular o consultar datos personas tan distintas como:
+
+* **Receptores de productos** en los almacenes, para actualizar los stocks.
+* **Trabajadores para consultar** si hay stock de un producto determinado.
+* **Las máquinas registradoras**, automáticamente, para actualizar el stock después de una venta.
+* **Los encargados de compras**, para consultar la situación y tomar decisiones.
+* **Los trabajadores del departamento** de control para tomar otro tipo de decisiones.
+* **Los clientes finales**, desde sus casas, consultando si pueden ir a comprar ese producto determinado.
+
+Como se ve en esta situación, pueden llegar a ser muchas las manos que accedan a los datos. Pero no será lo mismo lo que debe poder ver un cliente final desde su casa que lo que debe ver un trabajador del departamento de control. Por esta razón, es importante asignar una serie de privilegios a los usuarios que acceden a los datos, de tal manera que cada usuario tenga un perfil asignado con unos permisos determinados sobre la base de datos, en global, y sobre las relaciones, en particular.
+
+La asignación de los privilegios se puede llevar a cabo desde dos posibles puntos de vista:
+
+* Desde el punto de vista del usuario.
+* Desde el punto de vista de las tablas o las vistas.
+
+La sentencia que se utiliza en ambos casos para asignar permisos es la sentencia **GRANT**.
+
+Su sintaxis es:
+
+    GRANT { <Privilegi1> [, < Privilegi2> ..] } | ALL
+    ON [<User1>.]<Objecte>
+    TO {<User2> [, <User3> ...]} | PUBLIC.
+
+Los privilegios pueden ser:
+
+* **ALL**: asigna todos los permisos posibles a una tabla o a una vista.
+* **SELECT**: asigna el permiso de realizar consultas (leer) a un usuario o sobre una tabla concreta.
+* **INSERT**: asigna el permiso de inserción de datos a un usuario o sobre una tabla concreta.
+* **UPDATE**: asigna el permiso de modificación de datos a un usuario o sobre una tabla concreta.
+* **DELETE**: asigna el permiso de borrado de datos a un usuario o sobre una tabla concreta.
+* **INDEX**: asigna el permiso de creación de índices para una tabla concreta o para un usuario.
+* **ALTER**: asigna el permiso de modificación de la estructura de una tabla o a un usuario.
+
+Un objeto puede ser una tabla o una vista.
+Un user se refiere a un usuario concreto.
+
+Por ejemplo:
+
+    GRANT SELECT
+    ON Productes
+    TO Joan
+
+En este ejemplo se otorga el permiso de consulta al usuario Joan sobre la tabla Productos.
+
+La sentencia que se utiliza para quitar los permisos a un usuario determinado o sobre una tabla determinada es REVOKE.
+
+Su sintaxis es:
+
+    REVOKE {ALL | SELECT | INSERT | DELETE | INDEX | ALTER |
+    UPDATE | UPDATE(<Columna1> [, <Columna2> ...])}
+    ON {<Tabla> | <Vista>}
+    FROM {PUBLIC | <Usuario1> [, <Usuario2> ...]}
+    {RESTRICT/CASCADE}
+
+Un ejemplo de utilización de la sentencia REVOKE es:
+
+    REVOKE ALL
+    ON Proveedores
+    TO Joan
+
+En este caso, ahora se eliminan todos los privilegios sobre la tabla Proveedores al usuario Joan, que no podrá ni acceder a registros de esta tabla, ni modificarlos, ni borrarlos.
+
+Las opciones RESTRICT/CASCADE permiten extender o detener la aplicación de la sentencia REVOKE a lo largo de los usuarios a los que se hayan ido concediendo permisos. Es decir, si un usuario B dio permisos al usuario C para acceder a una tabla determinada y ahora el usuario B recibe una sentencia que revoca sus privilegios para acceder a esta tabla con la indicación CASCADE, automáticamente el usuario C perderá también los privilegios de acceso a dicha tabla.
+
+
+
+
 ## Esquema public y rol public
 
 **Cuando creamos una nueva base de datos**, PostgreSQL crea de forma predeterminada un esquema denominado **public** y concede acceso en este esquema a un **rol de backend denominado public**. A todos los usuarios y roles nuevos se les concede de forma predeterminada el **rol public** y, por lo tanto, pueden crear objetos en el esquema public.
@@ -116,7 +188,7 @@ Estos roles se emplean asignándolos a otros usuarios o roles creados por el adm
 
 Por tanto, su función principal es servir como mecanismos de delegación de permisos concretos. Gracias a ellos, se puede proporcionar a un usuario únicamente las capacidades necesarias para su trabajo, manteniendo al mismo tiempo un control más seguro sobre el sistema.
 
-En definitiva, los roles pg_... no se crean ni se alteran, sino que se utilizan mediante su asignación a otros roles para distribuir privilegios de forma controlada.
+En definitiva, los roles **pg_** no se crean ni se alteran, sino que se utilizan mediante su asignación a otros roles para distribuir privilegios de forma controlada.
 
 ## Crear roles de base de datos
 
