@@ -311,6 +311,135 @@ Del mismo modo, podemos otorgar un nuevo rol de la siguiente manera:
 
     GRANT readonly TO user1;
 
+    
+📄 un archivo .md completo descargable
+
+
+## Gestión de roles y usuarios 
+
+En PostgreSQL los **usuarios y roles forman parte del sistema de control de acceso**.  
+Un usuario puede ejecutar consultas con sus propios permisos o asumir temporalmente los permisos de otro rol.
+
+Para comprobar con qué usuario estamos trabajando o cambiar el rol activo existen varias sentencias útiles.
+
+---
+
+**Cambiar de rol**{.azul}
+
+La sentencia `SET ROLE` permite cambiar temporalmente el rol activo dentro de la sesión actual.
+
+     
+    SET ROLE nombre_rol;
+     
+
+Cuando se ejecuta esta sentencia, las operaciones que se realicen a partir de ese momento se ejecutarán **con los permisos del rol indicado**.
+
+**Ejemplo**
+
+     
+    SET ROLE rol_tecnico;
+     
+
+A partir de ese momento las consultas utilizarán los permisos del rol `rol_tecnico`.
+
+Para volver al rol original se utiliza:
+
+ 
+    RESET ROLE;
+ 
+
+Es importante tener en cuenta que el usuario solo puede cambiar a un rol **si tiene permiso para utilizarlo**, normalmente mediante:
+
+ 
+    GRANT rol_tecnico TO usuario;
+ 
+
+---
+
+**Ver usuario de sesión**{.azul}
+
+La función `session_user` permite conocer qué usuario **inició la conexión** con la base de datos.
+
+ 
+    SELECT session_user;
+ 
+
+Este valor **no cambia durante la sesión**, incluso aunque se utilice `SET ROLE`.
+
+---
+
+**Ver usuario actual**{.azul}
+
+La función `current_user` permite conocer qué usuario o rol **está activo** en ese momento.
+
+ 
+    SELECT current_user;
+ 
+
+Este valor **puede cambiar si se utiliza `SET ROLE`**.
+
+**Ejemplo**
+
+Si el usuario inicia sesión como `admin` y después ejecuta:
+ 
+    SET ROLE rol_tecnico;
+ 
+El resultado de ejecutar:
+ 
+    SELECT current_user;
+ 
+será: rol_tecnico
+ 
+
+---
+
+**Diferencia entre usuario de sesión y usuario actual**{.azul}
+
+| Función | Significado |
+|--------|-------------|
+| `session_user` | Usuario que inició la conexión |
+| `current_user` | Usuario o rol activo en ese momento. Quién está ejecutando las consultas|
+
+---
+
+**Relación entre usuario de sesión y rol activo**{.azul}
+
+Cuando un usuario se conecta a PostgreSQL se establece un **usuario de sesión**.
+
+Este usuario puede **cambiar temporalmente el rol activo** usando `SET ROLE`.
+
+**Esquema de funcionamiento**
+
+
+    Inicio de sesión
+        │
+        ▼
+    session_user = admin
+    current_user = admin
+        │
+        │  SET ROLE tecnico
+        ▼
+    session_user = admin
+    current_user = rol_tecnico
+        │
+        │  RESET ROLE
+        ▼
+    session_user = admin
+    current_user = admin
+    
+
+---
+
+
+!!!Note "Truco para entenderlo"
+    Podemos pensar que:
+
+    - **session_user** es la persona que **entra al edificio**.
+    - **current_user** es la **tarjeta de acceso que está usando** para abrir puertas.
+
+    El usuario puede cambiar la tarjeta (`SET ROLE`), pero sigue siendo la misma persona dentro del edificio.
+
+
 ## Comprobación de roles concedidos  
 
 Podemos utilizar la siguiente consulta para obtener una lista de todos los usuarios y roles de la base de datos junto con una lista de roles que se les han concedido:
