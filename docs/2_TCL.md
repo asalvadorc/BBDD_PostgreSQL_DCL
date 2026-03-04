@@ -6,27 +6,28 @@ Cuando se debe llevar a cabo un conjunto de sentencias de definición (DDL) o de
 
 Si todas se pueden ejecutar satisfactoriamente, entonces la transacción se dará por finalizada y se validarán los cambios realizados en la base de datos. En caso contrario, será necesario deshacer todos los cambios y dejar la base de datos como si ninguna de las sentencias se hubiera ejecutado.
 
-**Ejemplo** de transacción:
+!!!Note "**Ejemplo** de transacción"
+    Por ejemplo, si se quiere comprar una entrada para un espectáculo en un portal web, primero será necesario mostrar cuántas entradas quedan libres, los asientos disponibles y los precios, y permitir que el usuario elija cuál le interesa.
 
-Por ejemplo, si se quiere comprar una entrada para un espectáculo en un portal web, primero será necesario mostrar cuántas entradas quedan libres, los asientos disponibles y los precios, y permitir que el usuario elija cuál le interesa.
+    Si finalmente el usuario decide comprar determinados asientos, el sistema deberá:
 
-Si finalmente el usuario decide comprar determinados asientos, el sistema deberá:
+    * Validar que el pago ha sido correcto
+    * Marcar los asientos como ocupados
+    * Reducir el número total de asientos disponibles
 
-* Validar que el pago ha sido correcto
-* Marcar los asientos como ocupados
-* Reducir el número total de asientos disponibles
+    Si durante este proceso alguna de las sentencias de manipulación de datos no se ejecutara correctamente, el sistema quedaría inconsistente (por ejemplo, no coincidirían los asientos ocupados con el total disponible).
 
-Si durante este proceso alguna de las sentencias de manipulación de datos no se ejecutara correctamente, el sistema quedaría inconsistente (por ejemplo, no coincidirían los asientos ocupados con el total disponible).
-
-Por esta razón, es necesario garantizar que o bien se ejecutan todas las sentencias o no se ejecuta ninguna.
+    Por esta razón, es necesario garantizar que o bien se ejecutan todas las sentencias o no se ejecuta ninguna.
 
 ### Definir una transacción
 
-**Una transacción es un conjunto de instrucciones que forman una unidad lógica de trabajo, una unidad atómica que se garantiza que se ejecutará completamente o no se ejecutará.**
+**Una transacción** es un conjunto de instrucciones que forman una unidad lógica de trabajo, una unidad atómica que se garantiza que se ejecutará completamente o no se ejecutará.
 
 ### Inicio de transacción
 
-Para delimitar las instrucciones que forman parte de una transacción, se puede comenzar con la primera orden SQL o utilizar: **BEGIN** o **START TRANSACTION**
+Para delimitar las instrucciones que forman parte de una transacción, se puede comenzar con la primera orden SQL o utilizar: 
+
+`BEGIN` o `START TRANSACTION`
 
 
 Esto indicará que todo lo que aparezca a continuación hasta encontrar la sentencia de finalización se considerará una unidad atómica.
@@ -53,19 +54,32 @@ Sintaxis:
 COMMIT [WORK | TRANSACTION]
 ```
 
-(La palabra WORK es opcional)
+!!!Note "**Ejemplo** de COMMIT"
+    Supongamos una base de datos con las tablas Proveedores y Productos.
 
+    Si un proveedor cierra su empresa, será necesario eliminar:
 
+    * El proveedor
+    * Sus productos asociados
+
+    Esto puede hacerse así:
+
+        BEGIN TRANSACTION
+        DELETE FROM Proveedores WHERE PK_Codigo_Proveedor = 3
+        DELETE FROM Productos WHERE FK_Proveedor = 3
+        COMMIT TRANSACTION
+
+    Si ocurriera un fallo del sistema después del primer DELETE y no se hubieran usado transacciones, el proveedor se habría eliminado pero los productos seguirían existiendo incorrectamente en la base de datos.    
 
 **2.Deshacer la transacción (revertir los cambios)**
 
 `ROLLBACK`: Permite deshacer las operaciones realizadas que aún no se han confirmado con COMMIT.Se pueden revertir operaciones como:
 
-- `INSERT`,
-- `UPDATE`,
-- `DELETE`.
+- `INSERT`
+- `UPDATE`
+- `DELETE`
 
-Al ejecutar ROLLBACK, se desharán todas las modificaciones realizadas hasta el último estado estable. Es equivalente al botón "Deshacer" (UNDO) en programas ofimáticos.
+Al ejecutar `ROLLBACK`, se desharán todas las modificaciones realizadas hasta el último estado estable. Es equivalente al botón "Deshacer" (UNDO) en programas ofimáticos.
 
 Sintaxis:
 
@@ -73,41 +87,55 @@ Sintaxis:
 ROLLBACK [WORK | TRANSACTION]
 [SAVEPOINT savepointname]
 ```
+!!!Note "**Ejemplo** de ROLLBACK"
+    Si durante la operación ocurre un error, podemos cancelar toda la transacción utilizando **ROLLBACK**.
 
-(La palabra WORK es opcional)
+    
+
+        BEGIN TRANSACTION
+
+        DELETE FROM Proveedores 
+        WHERE PK_Codigo_Proveedor = 3;
+
+        -- ocurre un error o decidimos cancelar la operación
+        ROLLBACK;
+
+    En este caso:
+
+    * El proveedor **no se elimina**
+    * Los productos **tampoco se eliminan**
+    * La base de datos vuelve al estado anterior al inicio de la transacción
+
+    De esta forma se evita dejar la base de datos en un estado inconsistente.
 
 ## Puntos de seguridad (SAVEPOINT)
 
 Un SAVEPOINT permite un control más preciso de las transacciones.
 
-Permite marcar puntos intermedios dentro de la transacción para poder hacer un ROLLBACK hasta ese punto y no necesariamente hasta el inicio.
+Permite marcar puntos intermedios dentro de la transacción para poder hacer un `ROLLBACK` hasta ese punto y no necesariamente hasta el inicio.
 
 Así:
 
 * Las modificaciones se realizan de forma lógica
-* No se hacen físicas hasta el COMMIT
-* Se pueden descartar con ROLLBACK
+* No se hacen físicas hasta el `COMMIT`
+* Se pueden descartar con `ROLLBACK`
 
 ¿Qué sucede si una transacción no finaliza?
 
-Si se llega al final del programa sin ejecutar COMMIT ni ROLLBACK, la norma no especifica qué ocurre.
+Si se llega al final del programa sin ejecutar `COMMIT` ni `ROLLBACK`, la norma no especifica qué ocurre.
 
 Dependerá del sistema gestor de bases de datos.
 
-**Ejemplo de transacción**:
+!!!Note "**Ejemplo** con SAVEPOINT"
 
-Supongamos una base de datos con las tablas Proveedores y Productos.
+        BEGIN;
+        UPDATE cuentas SET saldo = saldo - 100 WHERE id = 1;
+        SAVEPOINT antes_transferencia;
+        UPDATE cuentas SET saldo = saldo + 100 WHERE id = 2;
+        -- si algo falla
+        ROLLBACK TO SAVEPOINT antes_transferencia;
+        COMMIT;
 
-Si un proveedor cierra su empresa, será necesario eliminar:
+    Así solo se deshace la segunda operación.
 
-* El proveedor
-* Sus productos asociados
 
-Esto puede hacerse así:
-
-    BEGIN TRANSACTION
-    DELETE FROM Proveedores WHERE PK_Codigo_Proveedor = 3
-    DELETE FROM Productos WHERE FK_Proveedor = 3
-    COMMIT TRANSACTION
-
-Si ocurriera un fallo del sistema después del primer DELETE y no se hubieran usado transacciones, el proveedor se habría eliminado pero los productos seguirían existiendo incorrectamente en la base de datos.

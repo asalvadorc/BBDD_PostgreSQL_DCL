@@ -442,7 +442,7 @@ Este usuario puede **cambiar temporalmente el rol activo** usando `SET ROLE`.
 
 ## Comprobación de roles concedidos  
 
-Podemos utilizar la siguiente consulta para obtener una lista de todos los usuarios y roles de la base de datos junto con una lista de roles que se les han concedido:
+Podemos utilizar la siguiente consulta para obtener una lista de todos los usuarios y roles de la base de datos junto con una lista de roles que se les han concedido:  
 
 
 
