@@ -1,132 +1,237 @@
--- =========================================================
--- SOLUCIÓN (psql) - Práctica DCL PostgreSQL
--- BD: tienda | Esquema: app
--- Ejecutar con:
---   psql -U postgres -f solucion_practica_dcl_psql.sql
--- =========================================================
+## BD: tienda | Esquema: app
 
-\echo '== 1) Crear base de datos =='
-DROP DATABASE IF EXISTS tienda;
-CREATE DATABASE tienda;
+---
 
-\echo '== 2) Conectarse a la BD =='
-\connect tienda
+## 1) Crear base de datos
 
-\echo '== 3) Crear esquema propio y bloquear public =='
-DROP SCHEMA IF EXISTS app CASCADE;
-CREATE SCHEMA app;
+    ```sql
+    CREATE DATABASE tienda;
+    ```
 
--- Evitar que cualquiera cree objetos en public
-REVOKE CREATE ON SCHEMA public FROM PUBLIC;
+---
 
-\echo '== 4) Crear tablas =='
-CREATE TABLE app.productos (
-  id SERIAL PRIMARY KEY,
-  nombre VARCHAR(50) NOT NULL,
-  stock INT NOT NULL DEFAULT 0
-);
+## 2) Crear esquema propio
 
-CREATE TABLE app.ventas (
-  id SERIAL PRIMARY KEY,
-  producto_id INT NOT NULL REFERENCES app.productos(id),
-  unidades INT NOT NULL,
-  fecha TIMESTAMP NOT NULL DEFAULT NOW()
-);
+    ```sql
+    CREATE SCHEMA app;
+    ```
 
-\echo '== 5) Datos de prueba =='
-INSERT INTO app.productos (nombre, stock) VALUES
-('Teclado', 20),
-('Raton', 15);
+---
 
-\echo '== 6) Crear roles (grupos) =='
-DO $$
-BEGIN
-  IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'rol_consulta') THEN
-    DROP ROLE rol_consulta;
-  END IF;
-  IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'rol_almacen') THEN
-    DROP ROLE rol_almacen;
-  END IF;
-  IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'rol_tpvs') THEN
-    DROP ROLE rol_tpvs;
-  END IF;
-  IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'rol_admin') THEN
-    DROP ROLE rol_admin;
-  END IF;
-END$$;
+## 3) Bloquear creación en public
 
-CREATE ROLE rol_consulta;
-CREATE ROLE rol_almacen;
-CREATE ROLE rol_tpvs;
-CREATE ROLE rol_admin;
+    ```sql
+    REVOKE CREATE ON SCHEMA public FROM PUBLIC;
+    ```
 
-\echo '== 7) Dar USAGE sobre el esquema app =='
-GRANT USAGE ON SCHEMA app TO rol_consulta, rol_almacen, rol_tpvs, rol_admin;
+---
 
-\echo '== 8) Permisos sobre tablas =='
--- Consulta
-GRANT SELECT ON app.productos TO rol_consulta;
+## 4) Crear tablas
 
--- Almacén
-GRANT SELECT, UPDATE ON app.productos TO rol_almacen;
+    ```sql
+    CREATE TABLE app.productos (
+        id SERIAL PRIMARY KEY,
+        nombre VARCHAR(50) NOT NULL,
+        stock INT NOT NULL DEFAULT 0
+    );
 
--- TPVs
-GRANT SELECT ON app.productos TO rol_tpvs;
-GRANT INSERT, SELECT ON app.ventas TO rol_tpvs;
+    CREATE TABLE app.ventas (
+        id SERIAL PRIMARY KEY,
+        producto_id INT NOT NULL REFERENCES app.productos(id),
+        unidades INT NOT NULL,
+        fecha TIMESTAMP NOT NULL DEFAULT NOW()
+    );
+    ```
 
--- Admin
-GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA app TO rol_admin;
+Datos de prueba:
 
-\echo '== 9) Permisos sobre secuencias (SERIAL) =='
-GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA app TO rol_tpvs, rol_admin;
+    ```sql
+    INSERT INTO app.productos (nombre, stock) VALUES
+    ('Teclado', 20),
+    ('Raton', 15);
 
-\echo '== 10) Crear usuarios =='
-DO $$
-BEGIN
-  IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'user_consulta') THEN
-    DROP ROLE user_consulta;
-  END IF;
-  IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'user_almacen') THEN
-    DROP ROLE user_almacen;
-  END IF;
-  IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'user_tpvs') THEN
-    DROP ROLE user_tpvs;
-  END IF;
-  IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'user_admin') THEN
-    DROP ROLE user_admin;
-  END IF;
-END$$;
+INSERT INTO app.ventas (producto_id, unidades) VALUES
+ (1, 2),
+ (2, 5);
+    ```
+---
 
-CREATE USER user_consulta WITH PASSWORD '1234';
-CREATE USER user_almacen  WITH PASSWORD '1234';
-CREATE USER user_tpvs     WITH PASSWORD '1234';
-CREATE USER user_admin    WITH PASSWORD '1234';
+## 5) Crear roles
 
-\echo '== 11) Asignar roles a usuarios =='
-GRANT rol_consulta TO user_consulta;
-GRANT rol_almacen  TO user_almacen;
-GRANT rol_tpvs     TO user_tpvs;
-GRANT rol_admin    TO user_admin;
+    ```sql
+    CREATE ROLE rol_consulta;
+    CREATE ROLE rol_almacen;
+    CREATE ROLE rol_tpvs;
+    CREATE ROLE rol_admin;
+    ```
 
-\echo '== 12) Ver usuarios y roles (\du) =='
-\du
+---
 
-\echo '== 13) Ver permisos sobre tablas (\dp) =='
-\dp app.productos
-\dp app.ventas
+## 6) Acceso al esquema
 
-\echo '========================================================='
-\echo 'LISTO. Para probar accesos, abre otra terminal y ejecuta:'
-\echo '  psql -U user_consulta -d tienda'
-\echo '  psql -U user_almacen  -d tienda'
-\echo '  psql -U user_tpvs     -d tienda'
-\echo '  psql -U user_admin    -d tienda'
-\echo ''
-\echo 'Comandos de prueba sugeridos:'
-\echo '  SELECT * FROM app.productos;'
-\echo '  UPDATE app.productos SET stock = stock + 1 WHERE id = 1;'
-\echo '  INSERT INTO app.ventas (producto_id, unidades) VALUES (1, 2);'
-\echo '========================================================='
+    ```sql
+    GRANT USAGE ON SCHEMA app TO rol_consulta, rol_almacen, rol_tpvs, rol_admin;
+    ```
 
--- 14) (Opcional) Revocar rol de almacén a user_almacen
--- REVOKE rol_almacen FROM user_almacen;
+---
+
+## 7) Permisos
+
+    ```sql
+    GRANT SELECT ON app.productos TO rol_consulta;
+    GRANT SELECT, UPDATE ON app.productos TO rol_almacen;
+    GRANT SELECT ON app.productos TO rol_tpvs;
+    GRANT INSERT, SELECT ON app.ventas TO rol_tpvs;
+    GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA app TO rol_admin;
+    ```
+
+---
+
+## 8) Secuencias
+
+    ```sql
+    GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA app TO rol_tpvs, rol_admin;
+    ```
+
+---
+
+## 9) Usuarios
+
+    ```sql
+    CREATE USER user_consulta WITH PASSWORD '1234';
+    CREATE USER user_almacen  WITH PASSWORD '1234';
+    CREATE USER user_tpvs     WITH PASSWORD '1234';
+    CREATE USER user_admin    WITH PASSWORD '1234';
+    ```
+
+---
+
+## 10) Asignar roles
+
+    ```sql
+    GRANT rol_consulta TO user_consulta;
+    GRANT rol_almacen  TO user_almacen;
+    GRANT rol_tpvs     TO user_tpvs;
+    GRANT rol_admin    TO user_admin;
+    ```
+
+---
+
+## 11) PRUEBAS
+
+## Conexión
+
+    ```sql
+    GRANT CONNECT ON DATABASE tienda TO
+    user_consulta,
+    user_almacen,
+    user_tpvs,
+    user_admin;
+    ```
+
+---
+
+## user_consulta
+
+    SET ROLE user_consulta;
+
+    ```sql
+    SELECT * FROM app.productos;
+    ```
+
+Debe fallar:
+
+    ```sql
+    UPDATE app.productos SET stock = 10 WHERE id = 1;
+    INSERT INTO app.ventas (producto_id, unidades) VALUES (1,2);
+    ```
+
+---
+
+## user_almacen
+
+  SET ROLE user_almacen;
+
+    ```sql
+    SELECT * FROM app.productos;
+    UPDATE app.productos SET stock = stock + 5 WHERE id = 1;
+    ```
+
+Debe fallar:
+
+    ```sql
+    INSERT INTO app.ventas (producto_id, unidades) VALUES (1,2);
+    ```
+
+---
+
+## user_tpvs
+
+    SET ROLE user_tpvs;
+
+    ```sql
+    SELECT * FROM app.productos;
+    INSERT INTO app.ventas (producto_id, unidades) VALUES (1,3);
+    ```
+
+Debe fallar:
+
+    ```sql
+    UPDATE app.productos SET stock = 5 WHERE id = 1;
+    ```
+
+---
+
+## user_auditor
+
+    SET ROLE user_auditor;
+
+    ```sql
+    SELECT * FROM app.productos;
+    SELECT * FROM app.ventas;
+    ```
+
+Debe fallar:
+
+    ```sql
+    UPDATE app.productos SET stock = 99 WHERE id = 1;
+    ```
+
+---
+
+## user_admin
+
+    SET ROLE user_admin;
+
+    ```sql
+    SELECT * FROM app.productos;
+    UPDATE app.productos SET stock = 99 WHERE id = 1;
+    INSERT INTO app.ventas (producto_id, unidades) VALUES (1,1);
+    DELETE FROM app.ventas WHERE id = 1;
+    ```
+
+—
+
+## 12) Auditor
+
+    ```sql
+    CREATE USER user_auditor WITH PASSWORD '1234';
+    GRANT CONNECT ON DATABASE tienda TO user_auditor;
+    GRANT pg_read_all_data TO user_auditor;
+    ```
+
+---
+
+
+## 13) Ver permisos
+
+    ```sql
+    SELECT
+    r.rolname,
+    ARRAY(SELECT b.rolname
+    FROM pg_catalog.pg_auth_members m
+    JOIN pg_catalog.pg_roles b ON (m.roleid = b.oid)
+    WHERE m.member = r.oid ) as memberof
+    FROM pg_catalog.pg_roles r
+    ORDER BY 1;
+    ```

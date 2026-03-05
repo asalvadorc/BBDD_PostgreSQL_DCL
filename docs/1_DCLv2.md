@@ -334,14 +334,6 @@ La sentencia `SET ROLE` permite cambiar temporalmente el rol activo dentro de la
 
 Cuando se ejecuta esta sentencia, las operaciones que se realicen a partir de ese momento se ejecutarán **con los permisos del rol indicado**.
 
-**Ejemplo**
-
-     
-    SET ROLE rol_tecnico;
-     
-
-A partir de ese momento las consultas utilizarán los permisos del rol `rol_tecnico`.
-
 Para volver al rol original se utiliza:
 
  
@@ -351,7 +343,7 @@ Para volver al rol original se utiliza:
 Es importante tener en cuenta que el usuario solo puede cambiar a un rol **si tiene permiso para utilizarlo**, normalmente mediante:
 
  
-    GRANT rol_tecnico TO usuario;
+    GRANT nombre_rol TO usuario;
  
 
 ---
