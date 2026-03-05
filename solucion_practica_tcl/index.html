@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://github.com/asalvadorc/BBDD_POSTGRES_DCL/solucion_practica_tcl/" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>🛒 PRÁCTICA TCL POSTGRESQL (SOLUCIÓN) - BD - Bases de Dades</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../css/extra.css" rel="stylesheet" />
+        <link href="../img/favicon.ico" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "\ud83d\uded2 PR\u00c1CTICA TCL POSTGRESQL (SOLUCI\u00d3N)";
+        var mkdocs_page_input_path = "solucion_practica_tcl.md";
+        var mkdocs_page_url = "/asalvadorc/BBDD_POSTGRES_DCL/solucion_practica_tcl/";
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="..">
+          <img src="../assets/logocaminas.png" class="logo" alt="Logo"/>
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">POSTGRESQL - DCL - TCL</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../1_introducci/">0. Introducción</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../1_DCLv2/">1. DCL</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../1.1_Practica/">1.1 Práctica</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../2_TCL/">2. TCL</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../2.1_Practica/">2.1 Práctica</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">BD - Bases de Dades</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">🛒 PRÁCTICA TCL POSTGRESQL (SOLUCIÓN)</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="practica-tcl-postgresql-solucion">🛒 PRÁCTICA TCL POSTGRESQL (SOLUCIÓN)</h1>
+<h1 id="practica-gestion-de-transacciones-con-tcl-version-con-solucion">🧪 PRÁCTICA: Gestión de Transacciones con TCL (VERSIÓN CON SOLUCIÓN)</h1>
+<h2 id="objetivo">🎯 Objetivo</h2>
+<p>Aprender a:</p>
+<ul>
+<li>Utilizar <strong>BEGIN / START TRANSACTION</strong></li>
+<li>Aplicar <strong>COMMIT</strong></li>
+<li>Aplicar <strong>ROLLBACK</strong></li>
+<li>Usar <strong>SAVEPOINT</strong></li>
+<li>Entender la importancia de la atomicidad en bases de datos</li>
+</ul>
+<hr />
+<h2 id="contexto">🗂️ Contexto</h2>
+<p>Trabajaremos con una base de datos de <strong>ventas de entradas de cine</strong>.</p>
+<p>Cuando un cliente compra una entrada, deben realizarse varias acciones:</p>
+<ol>
+<li>Registrar la compra  </li>
+<li>Marcar el asiento como ocupado  </li>
+<li>Reducir el número de asientos disponibles  </li>
+</ol>
+<p>⚠️ Todo esto debe hacerse como una única unidad lógica.</p>
+<hr />
+<h1 id="preparacion-solucion">🏗️ PREPARACIÓN (SOLUCIÓN)</h1>
+<blockquote>
+<p>💡 <em>Opcional: si ya existen tablas, primero bórralas.</em></p>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="k">DROP</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="k">IF</span><span class="w"> </span><span class="k">EXISTS</span><span class="w"> </span><span class="n">Ventas</span><span class="p">;</span>
+<span class="k">DROP</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="k">IF</span><span class="w"> </span><span class="k">EXISTS</span><span class="w"> </span><span class="n">Asientos</span><span class="p">;</span>
+<span class="k">DROP</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="k">IF</span><span class="w"> </span><span class="k">EXISTS</span><span class="w"> </span><span class="n">Sesiones</span><span class="p">;</span>
+</code></pre></div>
+<h2 id="crear-tablas">Crear tablas</h2>
+<p><div class="highlight"><pre><span></span><code><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">Sesiones</span><span class="w"> </span><span class="p">(</span>
+<span class="w">    </span><span class="n">id_sesion</span><span class="w"> </span><span class="nb">INT</span><span class="w"> </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="p">,</span>
+<span class="w">    </span><span class="n">pelicula</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">50</span><span class="p">),</span>
+<span class="w">    </span><span class="n">asientos_disponibles</span><span class="w"> </span><span class="nb">INT</span>
+<span class="p">);</span>
+
+<span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">Asientos</span><span class="w"> </span><span class="p">(</span>
+<span class="w">    </span><span class="n">id_asiento</span><span class="w"> </span><span class="nb">INT</span><span class="w"> </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="p">,</span>
+<span class="w">    </span><span class="n">id_sesion</span><span class="w"> </span><span class="nb">INT</span><span class="p">,</span>
+<span class="w">    </span><span class="n">ocupado</span><span class="w"> </span><span class="nb">BOOLEAN</span>
+<span class="p">);</span>
+
+<span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">Ventas</span><span class="w"> </span><span class="p">(</span>
+<span class="w">    </span><span class="n">id_venta</span><span class="w"> </span><span class="nb">INT</span><span class="w"> </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="p">,</span>
+<span class="w">    </span><span class="n">id_sesion</span><span class="w"> </span><span class="nb">INT</span><span class="p">,</span>
+<span class="w">    </span><span class="n">id_asiento</span><span class="w"> </span><span class="nb">INT</span>
+<span class="p">);</span>
+</code></pre></div>
+ALTER TABLE Asientos
+ADD CONSTRAINT fk_asientos_sesion
+FOREIGN KEY (id_sesion)
+REFERENCES Sesiones(id_sesion);</p>
+<p>ALTER TABLE Ventas
+ADD CONSTRAINT fk_ventas_sesion
+FOREIGN KEY (id_sesion)
+REFERENCES Sesiones(id_sesion);</p>
+<p>ALTER TABLE Ventas
+ADD CONSTRAINT fk_ventas_asiento
+FOREIGN KEY (id_asiento)
+REFERENCES Asientos(id_asiento);</p>
+<h2 id="insertar-datos-iniciales">Insertar datos iniciales</h2>
+<div class="highlight"><pre><span></span><code><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">Sesiones</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;Avatar 3&#39;</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">);</span>
+
+<span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">Asientos</span><span class="w"> </span><span class="k">VALUES</span>
+<span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="k">false</span><span class="p">),</span>
+<span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="k">false</span><span class="p">),</span>
+<span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="k">false</span><span class="p">),</span>
+<span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="k">false</span><span class="p">),</span>
+<span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="k">false</span><span class="p">);</span>
+</code></pre></div>
+<hr />
+<h1 id="parte-1-sin-transaccion-solucion-explicacion">🧩 PARTE 1 — Sin Transacción (SOLUCIÓN + explicación)</h1>
+<p>Simulación de compra SIN transacción (queda inconsistente si “falla” la última sentencia):</p>
+<div class="highlight"><pre><span></span><code><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">Ventas</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">);</span>
+
+<span class="k">UPDATE</span><span class="w"> </span><span class="n">Asientos</span>
+<span class="k">SET</span><span class="w"> </span><span class="n">ocupado</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">true</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">id_asiento</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span>
+
+<span class="c1">-- Simular fallo (NO ejecutar la siguiente línea)</span>
+<span class="k">UPDATE</span><span class="w"> </span><span class="n">Sesiones</span>
+<span class="k">SET</span><span class="w"> </span><span class="n">asientos_disponibles</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">asientos_disponibles</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">id_sesion</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+</code></pre></div>
+<p>Consultar:</p>
+<div class="highlight"><pre><span></span><code><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">Sesiones</span><span class="p">;</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">Asientos</span><span class="p">;</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">Ventas</span><span class="p">;</span>
+</code></pre></div>
+<p>✅ <strong>Solución / conclusión esperada:</strong><br />
+La BD queda <strong>inconsistente</strong>, porque hay una venta y un asiento ocupado, pero <strong>no se ha reducido</strong> <code>asientos_disponibles</code>.</p>
+<hr />
+<h1 id="parte-2-begin-commit-solucion">🧩 PARTE 2 — BEGIN + COMMIT (SOLUCIÓN)</h1>
+<p>Compra correcta con transacción:</p>
+<div class="highlight"><pre><span></span><code><span class="k">START</span><span class="w"> </span><span class="k">TRANSACTION</span><span class="p">;</span>
+
+<span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">Ventas</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">);</span>
+
+<span class="k">UPDATE</span><span class="w"> </span><span class="n">Asientos</span>
+<span class="k">SET</span><span class="w"> </span><span class="n">ocupado</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">true</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">id_asiento</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span><span class="p">;</span>
+
+<span class="k">UPDATE</span><span class="w"> </span><span class="n">Sesiones</span>
+<span class="k">SET</span><span class="w"> </span><span class="n">asientos_disponibles</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">asientos_disponibles</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">id_sesion</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+
+<span class="k">COMMIT</span><span class="p">;</span>
+</code></pre></div>
+<p>Consultar:</p>
+<div class="highlight"><pre><span></span><code><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">Sesiones</span><span class="p">;</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">Asientos</span><span class="p">;</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">Ventas</span><span class="p">;</span>
+</code></pre></div>
+<p>✅ <strong>Resultado esperado:</strong><br />
+Todo se guarda a la vez: venta registrada, asiento ocupado y <code>asientos_disponibles</code> reducido en 1.</p>
+<hr />
+<h1 id="parte-3-rollback-solucion">🧩 PARTE 3 — ROLLBACK (SOLUCIÓN)</h1>
+<p>Simular error y deshacer todo:</p>
+<div class="highlight"><pre><span></span><code><span class="k">START</span><span class="w"> </span><span class="k">TRANSACTION</span><span class="p">;</span>
+
+<span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">Ventas</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">);</span>
+
+<span class="k">UPDATE</span><span class="w"> </span><span class="n">Asientos</span>
+<span class="k">SET</span><span class="w"> </span><span class="n">ocupado</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">true</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">id_asiento</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">4</span><span class="p">;</span>
+
+<span class="c1">-- ERROR SIMULADO → sesión no existe (no afectará a ninguna fila)</span>
+<span class="k">UPDATE</span><span class="w"> </span><span class="n">Sesiones</span>
+<span class="k">SET</span><span class="w"> </span><span class="n">asientos_disponibles</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">asientos_disponibles</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">id_sesion</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">99</span><span class="p">;</span>
+
+<span class="k">ROLLBACK</span><span class="p">;</span>
+</code></pre></div>
+<p>Consultar:</p>
+<div class="highlight"><pre><span></span><code><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">Sesiones</span><span class="p">;</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">Asientos</span><span class="p">;</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">Ventas</span><span class="p">;</span>
+</code></pre></div>
+<p>✅ <strong>Resultado esperado:</strong><br />
+No se guarda <strong>nada</strong> de esta operación (ni venta 3 ni el asiento 4 ocupado), porque se ejecuta <code>ROLLBACK</code>.</p>
+<blockquote>
+<p>💡 Nota: en algunos SGBD, si no hay error “real” (solo 0 filas afectadas), el rollback igualmente deshace lo hecho hasta el momento si se decide ejecutarlo.</p>
+</blockquote>
+<hr />
+<h1 id="parte-4-savepoint-solucion">🧩 PARTE 4 — SAVEPOINT (SOLUCIÓN)</h1>
+<blockquote>
+<p>Objetivo: deshacer solo parte de la transacción.</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="k">START</span><span class="w"> </span><span class="k">TRANSACTION</span><span class="p">;</span>
+
+<span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">Ventas</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">);</span>
+<span class="n">SAVEPOINT</span><span class="w"> </span><span class="n">venta_realizada</span><span class="p">;</span>
+
+<span class="k">UPDATE</span><span class="w"> </span><span class="n">Asientos</span>
+<span class="k">SET</span><span class="w"> </span><span class="n">ocupado</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">true</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">id_asiento</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">5</span><span class="p">;</span>
+<span class="n">SAVEPOINT</span><span class="w"> </span><span class="n">asiento_actualizado</span><span class="p">;</span>
+
+<span class="c1">-- ERROR SIMULADO (0 filas actualizadas)</span>
+<span class="k">UPDATE</span><span class="w"> </span><span class="n">Sesiones</span>
+<span class="k">SET</span><span class="w"> </span><span class="n">asientos_disponibles</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">asientos_disponibles</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">id_sesion</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">99</span><span class="p">;</span>
+
+<span class="k">ROLLBACK</span><span class="w"> </span><span class="k">TO</span><span class="w"> </span><span class="n">asiento_actualizado</span><span class="p">;</span>
+
+<span class="k">COMMIT</span><span class="p">;</span>
+</code></pre></div>
+<p>Consultar:</p>
+<div class="highlight"><pre><span></span><code><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">Sesiones</span><span class="p">;</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">Asientos</span><span class="p">;</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">Ventas</span><span class="p">;</span>
+</code></pre></div>
+<p>✅ <strong>Resultado esperado (tal como está escrito):</strong><br />
+- La <strong>venta 4</strong> queda guardada<br />
+- El <strong>asiento 5</strong> queda ocupado<br />
+- La actualización fallida no cambia nada<br />
+- Se confirma con <code>COMMIT</code></p>
+<blockquote>
+<p>⚠️ Importante: <code>ROLLBACK TO asiento_actualizado</code> vuelve al estado justo DESPUÉS del <code>SAVEPOINT asiento_actualizado</code> (por tanto, mantiene la venta y el asiento ocupado).<br />
+Si se quisiera deshacer el asiento pero mantener la venta, habría que hacer <code>ROLLBACK TO venta_realizada</code>.</p>
+</blockquote>
+<h3 id="variante-extra-para-ver-el-efecto-real-del-savepoint">Variante extra (para ver el efecto real del SAVEPOINT)</h3>
+<p>Mantener la venta pero deshacer el asiento:</p>
+<div class="highlight"><pre><span></span><code><span class="k">START</span><span class="w"> </span><span class="k">TRANSACTION</span><span class="p">;</span>
+
+<span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">Ventas</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">);</span>
+<span class="n">SAVEPOINT</span><span class="w"> </span><span class="n">venta_ok</span><span class="p">;</span>
+
+<span class="k">UPDATE</span><span class="w"> </span><span class="n">Asientos</span>
+<span class="k">SET</span><span class="w"> </span><span class="n">ocupado</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">true</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">id_asiento</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+
+<span class="c1">-- Decidimos no ocuparlo finalmente</span>
+<span class="k">ROLLBACK</span><span class="w"> </span><span class="k">TO</span><span class="w"> </span><span class="n">venta_ok</span><span class="p">;</span>
+
+<span class="k">COMMIT</span><span class="p">;</span>
+</code></pre></div>
+<p>✅ <strong>Resultado esperado:</strong><br />
+- Se guarda la venta 5<br />
+- El asiento 1 <strong>NO</strong> queda ocupado (se deshace esa parte)</p>
+<hr />
+<h1 id="parte-5-reflexion-solucion">🧠 PARTE 5 — Reflexión (SOLUCIÓN)</h1>
+<ol>
+<li><strong>Ventaja:</strong> Garantiza consistencia: o todo se hace o no se hace nada.  </li>
+<li>Sin transacciones, una operación a medias deja datos incoherentes (ventas sin asientos, stock incorrecto, etc.).  </li>
+<li><code>ROLLBACK</code> deshace toda la transacción; <code>ROLLBACK TO SAVEPOINT</code> deshace solo hasta un punto intermedio.  </li>
+<li>SAVEPOINT se usa en procesos largos donde interesa conservar parte del trabajo (ej. registro de pedido) pero deshacer otra (ej. asignación de stock).</li>
+</ol>
+<hr />
+<h1 id="reto-final-solucion">🏁 RETO FINAL (SOLUCIÓN)</h1>
+<h2 id="requisito">Requisito</h2>
+<p>Vender 2 entradas a la vez. Si falla una, no se vende ninguna.</p>
+<h3 id="solucion-con-comprobacion-de-asientos-libres-antes-de-ocupar">Solución (con comprobación de asientos libres antes de ocupar)</h3>
+<div class="highlight"><pre><span></span><code><span class="k">START</span><span class="w"> </span><span class="k">TRANSACTION</span><span class="p">;</span>
+
+<span class="c1">-- VENTA 6: asiento 1 (comprobar que está libre)</span>
+<span class="k">UPDATE</span><span class="w"> </span><span class="n">Asientos</span>
+<span class="k">SET</span><span class="w"> </span><span class="n">ocupado</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">true</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">id_asiento</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="k">AND</span><span class="w"> </span><span class="n">id_sesion</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="k">AND</span><span class="w"> </span><span class="n">ocupado</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">false</span><span class="p">;</span>
+
+<span class="c1">-- Si no se actualiza ninguna fila, significa que estaba ocupado → abortar</span>
+<span class="c1">-- (esto depende del SGBD; en MySQL se puede comprobar ROW_COUNT())</span>
+<span class="c1">-- En un entorno docente, si ROW_COUNT() = 0 entonces hacemos ROLLBACK.</span>
+
+<span class="c1">-- Registrar venta 6 (asiento 1)</span>
+<span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">Ventas</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">);</span>
+
+<span class="c1">-- VENTA 7: asiento 2 (comprobar que está libre)</span>
+<span class="k">UPDATE</span><span class="w"> </span><span class="n">Asientos</span>
+<span class="k">SET</span><span class="w"> </span><span class="n">ocupado</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">true</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">id_asiento</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="k">AND</span><span class="w"> </span><span class="n">id_sesion</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="k">AND</span><span class="w"> </span><span class="n">ocupado</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">false</span><span class="p">;</span>
+
+<span class="c1">-- Registrar venta 7 (asiento 2)</span>
+<span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">Ventas</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="mi">7</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">);</span>
+
+<span class="c1">-- Reducir asientos disponibles en 2</span>
+<span class="k">UPDATE</span><span class="w"> </span><span class="n">Sesiones</span>
+<span class="k">SET</span><span class="w"> </span><span class="n">asientos_disponibles</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">asientos_disponibles</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">2</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">id_sesion</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+
+<span class="k">COMMIT</span><span class="p">;</span>
+</code></pre></div>
+<p>✅ <strong>Resultado esperado:</strong><br />
+Las dos ventas se registran y los dos asientos quedan ocupados, reduciendo el contador en 2.<br />
+Si en algún punto se decide abortar (por ejemplo, un asiento ya estaba ocupado), se hace <code>ROLLBACK</code> y no se guarda nada.</p>
+<hr />
+<h2 id="consultas-de-comprobacion-opcional">✅ CONSULTAS DE COMPROBACIÓN (opcional)</h2>
+<div class="highlight"><pre><span></span><code><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">Sesiones</span><span class="p">;</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">Asientos</span><span class="w"> </span><span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">id_asiento</span><span class="p">;</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">Ventas</span><span class="w"> </span><span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">id_venta</span><span class="p">;</span>
+</code></pre></div>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

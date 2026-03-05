@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://github.com/asalvadorc/BBDD_POSTGRES_DCL/2.1_Practica/" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>2.1 Práctica - BD - Bases de Dades</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../css/extra.css" rel="stylesheet" />
+        <link href="../img/favicon.ico" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "2.1 Pr\u00e1ctica";
+        var mkdocs_page_input_path = "2.1_Practica.md";
+        var mkdocs_page_url = "/asalvadorc/BBDD_POSTGRES_DCL/2.1_Practica/";
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="..">
+          <img src="../assets/logocaminas.png" class="logo" alt="Logo"/>
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">POSTGRESQL - DCL - TCL</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../1_introducci/">0. Introducción</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../1_DCLv2/">1. DCL</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../1.1_Practica/">1.1 Práctica</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../2_TCL/">2. TCL</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">2.1 Práctica</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#objetivo">🎯 Objetivo</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#contexto">🗂️ Contexto</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#preparacion">🏗️ PREPARACIÓN</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#crear-tablas">📦 Crear tablas</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#insertar-datos-iniciales">📊 Insertar datos iniciales</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#parte-1-sin-transaccion-para-ver-el-problema">🧩 PARTE 1 — Sin Transacción (Para ver el problema)</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#parte-2-uso-de-begin-commit">🧩 PARTE 2 — Uso de BEGIN + COMMIT</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#parte-3-uso-de-rollback">🧩 PARTE 3 — Uso de ROLLBACK</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#parte-4-uso-de-savepoint">🧩 PARTE 4 — Uso de SAVEPOINT</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#parte-5-reflexion">🧠 PARTE 5 — Reflexión</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#reto-final">🏁 RETO FINAL</a>
+    </li>
+    </ul>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">BD - Bases de Dades</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">POSTGRESQL - DCL - TCL</li>
+      <li class="breadcrumb-item active">2.1 Práctica</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="practica-gestion-de-transacciones-con-tcl">🧪 PRÁCTICA: Gestión de Transacciones con TCL</h1>
+<h2 id="objetivo">🎯 Objetivo</h2>
+<p>Aprender a:</p>
+<ul>
+<li>Utilizar <strong>BEGIN / START TRANSACTION</strong></li>
+<li>Aplicar <strong>COMMIT</strong></li>
+<li>Aplicar <strong>ROLLBACK</strong></li>
+<li>Usar <strong>SAVEPOINT</strong></li>
+<li>Entender la importancia de la atomicidad en bases de datos</li>
+</ul>
+<hr />
+<h2 id="contexto">🗂️ Contexto</h2>
+<p>Trabajaremos con una base de datos de <strong>ventas de entradas de cine</strong>.</p>
+<p>Cuando un cliente compra una entrada, deben realizarse varias acciones:</p>
+<ol>
+<li>Registrar la compra  </li>
+<li>Marcar el asiento como ocupado  </li>
+<li>Reducir el número de asientos disponibles  </li>
+</ol>
+<p>⚠️ Todo esto debe hacerse como una única unidad lógica.</p>
+<hr />
+<h2 id="preparacion">🏗️ PREPARACIÓN</h2>
+<p>Crea un esquema propio llamado: <strong>app</strong></p>
+<h3 id="crear-tablas">📦 Crear tablas</h3>
+<p>Dentro del esquema <code>app</code>, crea:</p>
+<p><strong class="azul">Tabla Sesiones</strong></p>
+<ul>
+<li>id_sesion: INT</li>
+<li>pelicula: VARCHAR(50)</li>
+<li>asientos_disponibles: INT</li>
+</ul>
+<p><strong class="azul">Tabla Asientos</strong></p>
+<ul>
+<li>id_asiento: INT</li>
+<li>id_sesion INT</li>
+<li>ocupado: BOOLEAN</li>
+</ul>
+<p><strong class="azul">Tabla Ventas</strong></p>
+<ul>
+<li>id_venta: INT</li>
+<li>id_sesion INT</li>
+<li>id_asiento: INT</li>
+</ul>
+<h3 id="insertar-datos-iniciales">📊 Insertar datos iniciales</h3>
+<ul>
+<li><strong>Sesiones</strong>: Introduce la primera sesión con 5 asientos disponibles en   la película 'Avatar 3'.</li>
+<li><strong>Asientos</strong>: Introduce 5 asientos de la sesión 1.</li>
+</ul>
+<h2 id="parte-1-sin-transaccion-para-ver-el-problema">🧩 PARTE 1 — Sin Transacción (Para ver el problema)</h2>
+<ul>
+<li>
+<p>Simular una compra SIN transacción:</p>
+<ul>
+<li>Inserta una Venta del asiento 2 de la sesión 1.</li>
+<li>Actualiza el asiento vendido como ocupado</li>
+<li>Simula un fallo</li>
+<li>Actualiza los asientos disponibles de la venta.</li>
+</ul>
+</li>
+<li>
+<p>Consultar el estado en el que han quedado las tablas.</p>
+</li>
+</ul>
+<p>📌 <strong>Pregunta:</strong><br />
+¿Es consistente la base de datos? Razona la respuesta.</p>
+<hr />
+<h2 id="parte-2-uso-de-begin-commit">🧩 PARTE 2 — Uso de BEGIN + COMMIT</h2>
+<ul>
+<li>
+<p>Repite las operaciones anteriores, cambia algún dato si fuera necesario para no infringir la integridad referencial, pero ahora introdue <strong>COMMIT</strong>.</p>
+</li>
+<li>
+<p>Consultar el estado en el que han quedado las tablas.</p>
+</li>
+</ul>
+<hr />
+<h2 id="parte-3-uso-de-rollback">🧩 PARTE 3 — Uso de ROLLBACK</h2>
+<ul>
+<li>
+<p>Repite las operaciones anteriores, cambia algún dato si fuera necesario para no infringir la integridad referencial, pero ahora introdue <strong>ROLLBACK</strong>.</p>
+</li>
+<li>
+<p>Consultar el estado en el que han quedado las tablas.</p>
+</li>
+</ul>
+<p>📌 <strong>Pregunta:</strong><br />
+¿Se ha realizado alguna modificación?</p>
+<hr />
+<h2 id="parte-4-uso-de-savepoint">🧩 PARTE 4 — Uso de SAVEPOINT</h2>
+<ul>
+<li>
+<p>Repite las operaciones anteriores, cambia algún dato si fuera necesario para no infringir la integridad referencial, pero ahora introdue un  <strong>SAVEPOINT</strong> antes de cada actualización.</p>
+</li>
+<li>
+<p>Consultar el estado en el que han quedado las tablas.</p>
+</li>
+</ul>
+<p>📌 <strong>Pregunta:</strong><br />
+¿Qué cambios se han guardado?</p>
+<hr />
+<h2 id="parte-5-reflexion">🧠 PARTE 5 — Reflexión</h2>
+<p>Responder:</p>
+<ol>
+<li>¿Qué ventaja tienen las transacciones?</li>
+<li>¿Qué ocurriría en un sistema real sin ellas?</li>
+<li>¿Qué diferencia hay entre ROLLBACK y ROLLBACK TO SAVEPOINT?</li>
+<li>¿En qué situaciones reales usarías SAVEPOINT?</li>
+</ol>
+<hr />
+<h2 id="reto-final">🏁 RETO FINAL</h2>
+<p>Crear una transacción que:</p>
+<ul>
+<li>Venda <strong>2 entradas a la vez</strong></li>
+<li>Si falla una, <strong>no se venda ninguna</strong></li>
+</ul>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../2_TCL/" class="btn btn-neutral float-left" title="2. TCL"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../2_TCL/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
