@@ -137,85 +137,42 @@ En nuestro entorno con **Docker**, **pg_dump** se ejecuta dentro del contenedor 
 
 En PostgreSQL las copias de seguridad pueden generarse principalmente en dos formatos: **SQL o dump** (formato custom). La elección de uno u otro depende del uso que se quiera dar al backup y de las herramientas que se utilizarán para restaurarlo.
 
-El formato SQL genera un archivo de texto que contiene sentencias SQL como CREATE TABLE, INSERT o ALTER. Estas sentencias permiten reconstruir la base de datos ejecutando el archivo con la herramienta **psql**. Este formato es fácil de leer y editar, por lo que suele utilizarse en entornos de aprendizaje o para bases de datos pequeñas.
+- **El formato SQL** genera un archivo de texto que contiene sentencias SQL como CREATE TABLE, INSERT o ALTER. Estas sentencias permiten reconstruir la base de datos ejecutando el archivo con la herramienta **psql**. Este formato es fácil de leer y editar, por lo que suele utilizarse en entornos de aprendizaje o para bases de datos pequeñas.
 
-Por otro lado, el formato dump o custom es un formato binario generado normalmente con la opción **-Fc** de pg_dump. Este tipo de archivo no es legible directamente, pero permite realizar restauraciones más flexibles utilizando la herramienta **pg_restore**. Entre sus ventajas se encuentran la posibilidad de restaurar solo ciertos objetos de la base de datos o realizar restauraciones en paralelo, lo que resulta especialmente útil en bases de datos de mayor tamaño.
+- **El formato dump o custom** es un formato binario generado normalmente con la opción **-Fc** de **pg_dump**. Este tipo de archivo no es legible directamente, pero permite realizar restauraciones más flexibles utilizando la herramienta **pg_restore**. Entre sus ventajas se encuentran la posibilidad de restaurar solo ciertos objetos de la base de datos o realizar restauraciones en paralelo, lo que resulta especialmente útil en bases de datos de mayor tamaño.
 
-En resumen, el formato SQL es más simple y legible, mientras que el formato dump ofrece mayor flexibilidad y eficiencia durante la restauración.
+!!!Note ""
+    En resumen, el formato **SQL** es más simple y legible, mientras que el formato **dump** ofrece mayor flexibilidad y eficiencia durante la restauración.
 
-Para los seguientes ejemplos crearemos una carpeta para los backups
+En los **siguientes ejemplos** aprenderemos a utilizar ambas herramientas para realizar copias de seguridad. Trabajaremos con la base de datos **tienda**, que hemos creado en esta unidad, y sobre ella realizaremos las copias de seguridad.
+
+Antes de empezar, crearemos una carpeta donde guardaremos los archivos de backup. Esto nos permitirá tener los datos organizados y localizarlos fácilmente.
+
+
 
         postgres_local/
         │
         ├─ docker-compose.yml
         └─ backups/
 
-
-<!--
-- Desde la carpeta donde está tu docker-compose.yml:
-
-
-        docker compose up -d
-
-- Comprobar que el contenedor está funcionando:
-
-        docker compose ps
-
-
-        Deberías ver algo parecido a:
-
-        NAME       IMAGE           SERVICE    STATUS
-        postgres   postgres:16.4   postgres   running        
-
-- Comprobar que PostgreSQL responde:
-
-        docker compose exec postgres psql -U admin -d tienda -c "SELECT version();"
-
-| Parte                          | Función                                  |
-| ------------------------------ | ---------------------------------------- |
-| docker compose exec postgres | Ejecuta el comando dentro del contenedor |
-| psql                         | Cliente de PostgreSQL                    |
-| -U admin                     | Usuario                                  |
-| -d tienda                    | Base de datos a la que conectarse        |
-| -c                           | Ejecuta una consulta                     |
-| "SELECT version();"          | Consulta que muestra la versión          |
-
-        Deberías ver algo parecido a:
-
-        version
-        ---------------------------------------------------------------------------------------------------------------------
-        PostgreSQL 16.4 (Debian 16.4-1.pgdg120+2) on x86_64-pc-linux-gnu, compiled by gcc (Debian 12.2.0-14) 12.2.0, 64-bit
-        (1 row)
-
--->
-**Ejemplo práctico 1**: Copia de seguridad de la base de datos **tienda** en formato **SQL**:
-
-- Desde la carpeta donde está tu docker-compose.yml, comprobar que pg_dump está disponible:
-
-        docker compose exec postgres pg_dump --version
-
-Deberías ver algo parecido a:
-
-        pg_dump (PostgreSQL) 16.4 (Debian 16.4-1.pgdg120+2)
-
-
-- Hacer la copia de seguridad de la bd **tienda** en formato SQL:
-
-
-        docker compose exec postgres pg_dump -U admin -C tienda > backups/tienda_backup.sql
+!!!Warning ""
+    **Ejemplo 1**: Copia de seguridad en formato **SQL**:    
+----
+        docker compose exec -T postgres pg_dump -U admin -C tienda > backups/tienda_backup.sql
 
 | Parte                        | Función                                                                |
 | -----------------------------| ------------------------------------------------------------------ |
 | docker compose exec postgres | Ejecuta un comando dentro del contenedor                           |
 | pg_dump                      | Herramienta que crea una copia de seguridad de una base de datos   |
+| -T                           | Evita problemas de codificación|
 | -U admin                     | Indica el usuario de PostgreSQL con el que se realiza la conexión  |
 | -C                           | Incluye en el archivo de backup la instrucción CREATE DATABASE     |
 | tienda                       | Nombre de la base de datos que se quiere copiar                    |
 | >                            | Redirige la salida del comando a un archivo                        |
 | tienda_backup.sql            | Archivo donde se guarda el backup en formato SQL                   |
 
-
-**Ejemplo práctico 2**: Copia de seguridad de la base de datos **tienda** en formato **dump (binario)**:
+!!!Warning ""
+    **Ejemplo 2**: Copia de seguridad en formato **dump (binario)**:
 
 Cuando se trabaja con PostgreSQL dentro de un contenedor Docker y se utiliza PowerShell en Windows, pueden aparecer problemas al manejar archivos de backup **binarios** (formato custom) usando redirecciones (>, <) o pipes. Esto ocurre porque PowerShell puede modificar el flujo de datos binarios.
 
@@ -224,20 +181,18 @@ Para evitar estos problemas, la forma más fiable es crear el backup dentro del 
 
 Primero se genera el backup dentro del contenedor usando pg_dump en formato custom:
 
-        docker compose exec postgres pg_dump -U admin -Fc -C tienda -f /tmp/dump-tienda.dump
+        docker compose exec -T postgres pg_dump -U admin -Fc -C tienda -f /tmp/dump_tienda.dump
 
 Después se copia el archivo desde el contenedor a la carpeta backups del sistema anfitrión:
 
         docker cp postgres:/tmp/dump-tienda.dump backups/dump-tienda.dump
 
-De esta forma el archivo queda guardado en:
-
-        backups/dump-tienda.dump
 
 | Parte                        | Función                                                                 |
 |------------------------------|-------------------------------------------------------------------------|
 | docker compose exec postgres | Ejecuta un comando dentro del contenedor                               |
 | pg_dump                      | Herramienta que crea una copia de seguridad de una base de datos       |
+| -T                           | Evita problemas de codificación|
 | -U admin                     | Indica el usuario de PostgreSQL con el que se realiza la conexión      |
 | -Fc                          | Genera el backup en formato custom (binario) compatible con pg_restore |
 | -C                           | Incluye en el backup la instrucción CREATE DATABASE                    |
@@ -248,7 +203,12 @@ De esta forma el archivo queda guardado en:
 
 ## 7. Restaurar una copia de seguridad en PostgreSQL
 
-En PostgreSQL existen diferentes herramientas que permiten realizar estas restauraciones, dependiendo principalmente del formato en el que se haya creado la copia de seguridad. Cuando el backup se encuentra en **formato SQL**, la restauración se realiza ejecutando las sentencias contenidas en el archivo mediante la herramienta **psql**. Por otro lado, cuando la copia de seguridad se ha generado en un **formato binario o personalizado**, se utiliza la herramienta **pg_restore**, que permite restaurar la información de forma más flexible.
+En PostgreSQL existen diferentes herramientas para restaurar copias de seguridad, dependiendo del formato del backup:
+
+- Backup en formato **SQL** (.sql): Se restaura ejecutando el archivo con la herramienta **psql**
+
+- Backup en formato **binario o personalizado** (.backup, .dump): Se restaura con la herramienta **pg_restore**
+
 
 Al restaurar una copia de seguridad en PostgreSQL, en algunos casos, el archivo de backup incluye la sentencia **CREATE DATABASE**, que crea automáticamente la base de datos durante la restauración. Por el contrario, si el archivo de backup no contiene la sentencia de creación de la base de datos, entonces es necesario crear la base de datos manualmente antes de restaurar el backup. Una vez creada, se ejecuta la restauración indicando esa base de datos como destino para que se creen las tablas, datos y demás objetos.   
 
@@ -256,66 +216,75 @@ Para crear una base de datos a partir de otra existente desde Docker Compose, de
 
         docker compose exec postgres psql -U admin -d postgres -c "CREATE DATABASE nueva_bd;"
 
-**Ejemplo práctico 3 - Restauración con psql**: En este ejemplo vamos a restaurar la copia de seguridad de la BD tienda, que hicimos en el ejemplo práctico 1. Como la copia la hicmos en formato SQL, la restauración la haremos con **psql**.
+En los siguientes ejemplos aprenderemos a utilizar ambas herramientas para restaurar la base de datos **tienda**, de la que ya hemos hecho la copia de seguridad en los ejemplos anteriores.        
+
+!!!Warning ""
+    **Ejemplo 3**: Restauración con **psql**
+En Linux:
+
+        docker compose exec -T postgres psql -U admin -d postgres < backups/tienda_backup.sql
+
+En Windows:
+
+        type backups/tienda_backup.sql | docker compose exec -T postgres psql -U admin -d postgres   
 
 
-        docker compose exec -T postgres psql -U admin -d tienda < tienda_backup.sql
 
-!!!Note "Nota"
-    Si aparece el error: `En línea: 1 Carácter: 63`. Este error  es debido a que estás usando PowerShell, y en PowerShell el operador **<** no funciona para redirección como en Linux o bash.
+!!!Warning ""
+    **Ejemplo 4**: Restauración con **pg_restore**
 
-    Una posible solución sería utilizar **type** o **Get-Content**:
+Primero se copia el archivo desde el contenedor a la carpeta backups del sistema anfitrión:
 
-        type backups/tienda_backup.sql | docker compose exec -T postgres psql -U admin -d tienda   
+        docker cp postgres:/tmp/dump-tienda.dump backups/dump-tienda.dump
 
-
-
-**Ejemplo práctico 4 - Restauración con pg_restore**: En este ejemplo vamos a restaurar la copia de seguridad de la BD tienda, que hicimos en el ejemplo práctico 2. Como la copia la hicmos en formato dump, la restauración la haremos con **pg_restore**.  
-Para que **pg_restore** funcione, el backup no puede ser un **.sql**, debe crearse con **pg_dump en formato binario (custom)** usando la opción **-Fc**.
+Después se restaura la BD desde la carpeta de backups usando **pg_restore**:
 
 
-Para restaurar la copia de seguridad, primero se vuelve a copiar el archivo al contenedor:
-
-        docker cp backups/dump-tienda.dump postgres:/tmp/dump-tienda.dump
-
-Después se ejecuta pg_restore dentro del contenedor:
-
-        docker compose exec postgres pg_restore -U admin -C -d postgres /tmp/dump-tienda.dump
+        docker compose exec postgres pg_restore -U admin -C -d postgres /tmp/dump_tienda.dump
 
 La opción -C permite que el proceso cree la base de datos tienda automáticamente antes de restaurar su contenido.
 
 
 ## 8. Copias de seguridad con DBeaver
 
-DBeaver permite realizar copias de seguridad utilizando una interfaz gráfica.
+Cuando se realizan copias de seguridad o restauraciones desde DBeaver, en realidad el programa no implementa su propio sistema de backup. Internamente utiliza las herramientas oficiales de PostgreSQL, como pg_dump, psql y pg_restore.
 
-Pasos:
+DBeaver simplemente proporciona una interfaz gráfica que facilita el uso de estas herramientas sin tener que escribir los comandos manualmente.
 
-![alt text](image-1.png)
+Dependiendo de la operación que se realice desde la interfaz, DBeaver ejecutará una u otra herramienta por debajo.
 
-![alt text](image-2.png)
 
-![alt text](image-3.png)
-
-![alt text](image-4.png)
-
-1. Conectarse al servidor PostgreSQL.
-2. Hacer clic derecho sobre la base de datos.
-3. Seleccionar Tools → Backup.
-4. Elegir el formato de exportación.
-5. Guardar el archivo de backup.
-9. Restauración con DBeaver
-
-Para restaurar una copia de seguridad en DBeaver:
-
-1. Crear una base de datos nueva.
-2. Hacer clic derecho sobre la base de datos.
-3. Seleccionar Tools → Restore.
-4. Elegir el archivo de backup.
-5. Ejecutar la restauración.
+| Opción en DBeaver        | Herramienta utilizada | Función                                                     |
+|--------------------------|----------------------|-------------------------------------------------------------|
+| Tools → Backup (SQL o dump)     | `pg_dump`            | Crear copias de seguridad en formato SQL (plain) o  custom o binario (.dump)          |
+| Tools → Restore (dump)   | `pg_restore`         | Restaurar copias en formato custom o binario               |
+| Execute Script           | `psql`               | Restaurar copias en formato SQL ejecutando el script       |
 
 
 
-Para saber las bd que tiene el servidor:
 
-        docker compose exec postgres psql -U admin -d postgres -l
+### Para hacer una copia de seguridad en DBeaver:
+
+
+| 1. Clic derecho, Tools → Backup | 2. Seleccionar los objetos |
+|----------------------|------------------------|
+| ![Paso 1](image-1.png) | ![Paso 2](image-2.png) |
+| **3. Elegir el formato de exportación** | **4. Guardar backup** |
+| ![Paso 3](image-3.png) | ![Paso 4](image-4.png) |
+
+### Para restaurar una copia de seguridad en DBeaver:
+
+- Si el archivo de backup es en formato SQL
+
+| 1. Clic derecho, Tools → Ejecutar Script | 2. Seleccionar el archivo .sql |
+|----------------------|------------------------|
+| ![Paso 5](image-9.png) | ![Paso 7](image-10.png) |
+
+- Si el archivo de backup es en formato dump
+
+| 1. Clic derecho, Tools → Restore | 2. Seleccionar el archivo .dmp |
+|----------------------|------------------------|
+| ![Paso 6](image-8.png) |![Paso 8](image-6.png) |
+
+
+

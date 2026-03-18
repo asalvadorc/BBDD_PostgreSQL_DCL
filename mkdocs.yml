@@ -1,4 +1,3 @@
-site_url : https://github.com/asalvadorc/BBDD_POSTGRES_DCL
 site_name: BD - Bases de Dades
 theme: 
   name: readthedocs
@@ -23,8 +22,8 @@ nav:
     - 1. DCL: 1_DCLv2.md 
     - 1.1 Práctica: 1.1_Practica.md
     - 2. TCL: 2_TCL.md
-    - 2.1 Práctica: 2.1_Practica.md
-    #- 3. Seguridad: 3_Seguridad.md
+    - 2.1 Práctica: 2.2_Practica.md
+    - 3. Seguridad: 3_Seguridad.md
 
     
   
