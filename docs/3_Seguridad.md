@@ -1,4 +1,4 @@
-# Seguridad de los datos y copias de seguridad en PostgreSQL
+# 3. Seguridad de los datos y copias de seguridad en PostgreSQL
 
 
 ## 1. Introducción
@@ -99,7 +99,7 @@ Algunos sistemas de bases de datos, como Postgres, utilizan mecanismos como Writ
 
 Dónde está y cómo verlo depende del sistema gestor de bases de datos (SGBD) que estés usando. En PostgreSQL, los archivos WAL se guardan dentro del directorio de datos del servidor. Normalmente están en la carpeta **pg_wal/**.
 
-## 6. Opciones para realizar copias de seguridad en PostgreSQL
+## 6. Herramientas para realizar copias de seguridad en PostgreSQL
 
 En **PostgreSQL** existen diferentes opciones para realizar copias de seguridad, dependiendo de si se quiere copiar una base de datos concreta, todo el servidor o incluso los archivos físicos del sistema. Las herramientas principales que ofrece el sistema permiten realizar **copias lógicas o físicas**.
 
@@ -128,7 +128,7 @@ Además de poder realizar copias de seguridad de una base de datos completa o de
 | `pg_dump -n esquema`        | Un esquema completo                           | Lógica        |
 
 
-## 6. Copias de seguridad con pg_dump
+**Copias de seguridad con pg_dump**{.azul}
 
 **pg_dump** es la herramienta principal de PostgreSQL para realizar copias de seguridad lógicas.
 En nuestro entorno con **Docker**, **pg_dump** se ejecuta dentro del contenedor de PostgreSQL.
@@ -201,7 +201,7 @@ Después se copia el archivo desde el contenedor a la carpeta backups del sistem
 | /tmp/dump-tienda.dump        | Ruta dentro del contenedor donde se guarda el archivo de backup        |
 
 
-## 7. Restaurar una copia de seguridad en PostgreSQL
+## 7. Herramientas para restaurar una copia de seguridad en PostgreSQL
 
 En PostgreSQL existen diferentes herramientas para restaurar copias de seguridad, dependiendo del formato del backup:
 
@@ -263,7 +263,7 @@ Dependiendo de la operación que se realice desde la interfaz, DBeaver ejecutar�
 
 
 
-### Para hacer una copia de seguridad en DBeaver:
+**Hacer una copia de seguridad en DBeaver:**{.azul}
 
 
 | 1. Clic derecho, Tools → Backup | 2. Seleccionar los objetos |
@@ -272,7 +272,7 @@ Dependiendo de la operación que se realice desde la interfaz, DBeaver ejecutar�
 | **3. Elegir el formato de exportación** | **4. Guardar backup** |
 | ![Paso 3](image-3.png) | ![Paso 4](image-4.png) |
 
-### Para restaurar una copia de seguridad en DBeaver:
+**Restaurar una copia de seguridad en DBeaver:**{.azul}
 
 - Si el archivo de backup es en formato SQL
 

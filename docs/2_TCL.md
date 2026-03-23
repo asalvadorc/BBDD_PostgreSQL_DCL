@@ -1,4 +1,4 @@
-# El lenguaje de control de transacciones (TCL)
+# 2. El lenguaje de control de transacciones TCL
 
 ## Las transacciones
 

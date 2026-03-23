@@ -1,25 +1,25 @@
-# 1. Introducció
+# 0. Introducción
 
-- **Llenguatge de control de dades (DCL, data control language*)**, és l’encarregat d’establir els mecanismes de control. Ofereix solucions als problemes de concurrència dels usuaris i garanteix la seguretat de les dades.
+- **Lenguaje de control de datos (DCL, Data Control Language)**, es el encargado de establecer los mecanismos de control. Ofrece soluciones a los problemas de concurrencia de los usuarios y garantiza la seguridad de los datos.
 
-El llenguatge SQL és un llenguatge declaratiu, és a dir, no és imperatiu o procedimental. El llenguatge SQL indicarà què es vol fer, no indicarà com s’ha de fer. Per aquesta raó, necessita al seu costat un altre llenguatge sí procedimental que doni les instruccions al sistema per fer una sèrie d’operacions.
+El lenguaje SQL es un lenguaje declarativo, es decir, no es imperativo o procedimental. SQL indica qué se quiere hacer, pero no cómo se debe hacer. Por esta razón, necesita apoyarse en otro lenguaje procedimental que proporcione las instrucciones necesarias al sistema para realizar una serie de operaciones.
 
-Aquest apartat se centra en el llenguatge de control de dades (DCL). S’encarrega de totes les instruccions que tenen a veure amb l’administració de la base de dades:
+Este apartado se centra en el lenguaje de control de datos (DCL). Se encarga de todas las instrucciones relacionadas con la administración de la base de datos:
 
-- creació d’usuaris,
-- assignació de privilegis,
-- accessos,
-- *tunning*,
-- …
+- creación de usuarios  
+- asignación de privilegios  
+- accesos  
+- tuning  
+- …  
 
-Aquest llenguatge pot resumir les seves **funcionalitats** en dues: 
+Este lenguaje puede resumir sus **funcionalidades** en dos:
 
-1) Oferir accions per dur a terme transaccions  
-2) Oferir solucions per garantir la seguretat de les dades. 
+1) Ofrecer acciones para llevar a cabo transacciones  
+2) Ofrecer soluciones para garantizar la seguridad de los datos  
 
-Aquestes dues funcionalitats són clau per solucionar els problemes d’una de les característiques més importants d’una base de dades: **la capacitat de ser-ne multiusuari.** L’accés comú de diversos usuaris a les mateixes dades pot donar peu a problemes molt importants, com el problema de la protecció de dades i l’assignació posterior de privilegis. Per tant, requereix un tractament especial.
+Estas dos funcionalidades son clave para resolver los problemas derivados de una de las características más importantes de una base de datos: **la capacidad de ser multiusuario**. El acceso simultáneo de varios usuarios a los mismos datos puede dar lugar a problemas importantes, como la protección de la información y la asignación de privilegios. Por ello, requiere un tratamiento específico.
 
-Les dues funcionalitats estan directament relacionades amb els conceptes de *confidencialitat*, *integritat* i *disponibilitat*:
+Estas funcionalidades están directamente relacionadas con los conceptos de *confidencialidad*, *integridad* y *disponibilidad*:
 
-- Amb la possibilitat de donar **permisos als usuaris** per accedir a part de la informació s’ofereix una solució al problema de la confidencialitat.
-- Amb la possibilitat de dur a terme execucions de consultes (*query*) a partir de **transaccions** s’ofereixen solucions als problemes d’integritat i disponibilitat.
+- La posibilidad de asignar **permisos a los usuarios** para acceder a parte de la información proporciona una solución al problema de la confidencialidad.  
+- La posibilidad de ejecutar consultas (*queries*) mediante **transacciones** ofrece soluciones a los problemas de integridad y disponibilidad.

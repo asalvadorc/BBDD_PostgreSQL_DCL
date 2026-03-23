@@ -1,4 +1,4 @@
-# El lenguaje de control de datos DCL
+# 1. El lenguaje de control de datos DCL
 
 El Data Control Language (DCL – Lenguaje de control de datos) se utiliza para gestionar los permisos y privilegios de acceso a los objetos dentro de una base de datos, estableciendo políticas de seguridad que determinan qué usuarios o roles pueden interactuar con los datos y de qué manera.
 
