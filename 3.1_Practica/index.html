@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>3.1 PRÁCTICA: Copias de seguridad y restauración en PostgreSQL - BD - Bases de Dades</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../css/extra.css" rel="stylesheet" />
+        <link href="../img/favicon.ico" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "3.1 PR\u00c1CTICA: Copias de seguridad y restauraci\u00f3n en PostgreSQL";
+        var mkdocs_page_input_path = "3.1_Practica.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="..">
+          <img src="../assets/logocaminas.png" class="logo" alt="Logo"/>
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">POSTGRESQL - DCL - TCL</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../1_introducci/">0. Introducción</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >1. DCL</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../1_DCLv2/">1. El lenguaje de control de datos DCL</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../1.1_Practica/">1.1 PRÁCTICA DCL POSTGRESQL</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >2. TCL</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../2_TCL/">2. El lenguaje de control de transacciones TCL</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../2.1_Practica/">2.1 PRÁCTICA TCL para Alumnos DAW</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../2.2_Practica/">2.2 PRÁCTICA TCL para Alumnos ASIX</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" >3. Seguridad</a>
+    <ul class="current">
+                <li class="toctree-l2"><a class="reference internal" href="../3_Seguridad/">3. Seguridad de los datos y copias de seguridad en PostgreSQL</a>
+                </li>
+                <li class="toctree-l2 current"><a class="reference internal current" href="#">3.1 PRÁCTICA: Copias de seguridad y restauración en PostgreSQL</a>
+    <ul class="current">
+    <li class="toctree-l3"><a class="reference internal" href="#objetivo">🎯 Objetivo</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#enunciado">🗂️ Enunciado</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#1-preparacion-del-entorno">1. Preparación del entorno</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#2-backup-en-formato-sql">2. Backup en formato SQL</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#3-simulacion-de-fallo">3. Simulación de fallo</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#4-restauracion-con-psql">4. Restauración con psql</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#5-backup-en-formato-dump">5. Backup en formato dump</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#6-restauracion-con-pg_restore">6. Restauración con pg_restore</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#7-verificacion">7. Verificación</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#8-ampliacion">8. Ampliación</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#9-cuestiones">9. 📌 Cuestiones</a>
+    </li>
+    </ul>
+                </li>
+    </ul>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">BD - Bases de Dades</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">POSTGRESQL - DCL - TCL</li>
+          <li class="breadcrumb-item">3. Seguridad</li>
+      <li class="breadcrumb-item active">3.1 PRÁCTICA: Copias de seguridad y restauración en PostgreSQL</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="31-practica-copias-de-seguridad-y-restauracion-en-postgresql">3.1 PRÁCTICA: Copias de seguridad y restauración en PostgreSQL</h1>
+<h2 id="objetivo">🎯 Objetivo</h2>
+<p>En esta práctica aprenderás a:</p>
+<ul>
+<li>Realizar copias de seguridad en PostgreSQL  </li>
+<li>Restaurar bases de datos a partir de backups  </li>
+<li>Trabajar con herramientas como <strong>pg_dump</strong>, <strong>psql</strong> y <strong>pg_restore</strong>  </li>
+<li>Utilizar PostgreSQL en un entorno con <strong>Docker</strong>  </li>
+</ul>
+<hr />
+<h2 id="enunciado">🗂️ Enunciado</h2>
+<p>Necesitamos asegurar la información de la base de datos <code>tienda</code>.  </p>
+<p>Como administrador/a de bases de datos, deberás:</p>
+<ul>
+<li>Crear copias de seguridad  </li>
+<li>Simular la pérdida de datos  </li>
+<li>Restaurar la información  </li>
+</ul>
+<hr />
+<h2 id="1-preparacion-del-entorno">1. Preparación del entorno</h2>
+<ol>
+<li>
+<p>Crear una carpeta llamada <code>backups</code> en la misma ubicación donde está el archivo docker-compose.yml, ya que será desde ahí donde ejecutaremos los comandos de Docker.</p>
+</li>
+<li>
+<p>Comprobar que las herramientas <code>pg_dump</code> y <code>pg_restore</code> están disponibles en el contenedor.</p>
+</li>
+</ol>
+<hr />
+<h2 id="2-backup-en-formato-sql">2. Backup en formato SQL</h2>
+<p>Realiza una copia de seguridad de la base de datos <code>tienda</code> en formato SQL.</p>
+<h2 id="3-simulacion-de-fallo">3. Simulación de fallo</h2>
+<p>Elimina la base de datos <code>tienda</code>.</p>
+<h2 id="4-restauracion-con-psql">4. Restauración con psql</h2>
+<p>Restaura la base de datos utilizando el archivo SQL generado.</p>
+<h2 id="5-backup-en-formato-dump">5. Backup en formato dump</h2>
+<p>Realiza una copia de seguridad en formato binario (custom).</p>
+<h2 id="6-restauracion-con-pg_restore">6. Restauración con pg_restore</h2>
+<ol>
+<li>
+<p>Elimina de nuevo la base de datos <code>tienda</code>.</p>
+</li>
+<li>
+<p>Restaura la base de datos utilizando el archivo dump.</p>
+</li>
+</ol>
+<h2 id="7-verificacion">7. Verificación</h2>
+<p>Comprueba el contenido de las tablas tras la restauración.</p>
+<h2 id="8-ampliacion">8. Ampliación</h2>
+<p>Realiza una copia de seguridad únicamente de la tabla <code>productos</code>.</p>
+<h2 id="9-cuestiones">9. 📌 Cuestiones</h2>
+<p>Responde a las siguientes preguntas:</p>
+<ol>
+<li>¿Qué diferencia hay entre un backup en formato SQL y en formato dump?  </li>
+<li>¿Qué herramienta se utiliza para restaurar cada uno?  </li>
+<li>¿Por qué se utiliza la base de datos <code>postgres</code> durante la restauración?  </li>
+<li>¿Qué ocurre si intentas restaurar una base de datos que ya existe?  </li>
+<li>¿Qué ventajas tiene el formato dump frente al SQL?  </li>
+</ol>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../3_Seguridad/" class="btn btn-neutral float-left" title="3. Seguridad de los datos y copias de seguridad en PostgreSQL"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../3_Seguridad/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

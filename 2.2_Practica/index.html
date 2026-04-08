@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>2.2 PRÁCTICA TCL para Alumnos ASIX - BD - Bases de Dades</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../css/extra.css" rel="stylesheet" />
+        <link href="../img/favicon.ico" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "2.2 PR\u00c1CTICA TCL para Alumnos ASIX";
+        var mkdocs_page_input_path = "2.2_Practica.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="..">
+          <img src="../assets/logocaminas.png" class="logo" alt="Logo"/>
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">POSTGRESQL - DCL - TCL</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../1_introducci/">0. Introducción</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >1. DCL</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../1_DCLv2/">1. El lenguaje de control de datos DCL</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../1.1_Practica/">1.1 PRÁCTICA DCL POSTGRESQL</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" >2. TCL</a>
+    <ul class="current">
+                <li class="toctree-l2"><a class="reference internal" href="../2_TCL/">2. El lenguaje de control de transacciones TCL</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../2.1_Practica/">2.1 PRÁCTICA TCL para Alumnos DAW</a>
+                </li>
+                <li class="toctree-l2 current"><a class="reference internal current" href="#">2.2 PRÁCTICA TCL para Alumnos ASIX</a>
+    <ul class="current">
+    <li class="toctree-l3"><a class="reference internal" href="#objetivo">🎯 Objetivo</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#contexto">🗂️ Contexto</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#insertar-datos-iniciales">📊 Insertar datos iniciales</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#1-sin-transaccion-para-ver-el-problema">1. Sin Transacción (Para ver el problema)</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#2-uso-de-begin-commit">2. Uso de BEGIN + COMMIT</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#3-uso-de-rollback">3. Uso de ROLLBACK</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#4-uso-de-savepoint">4. Uso de SAVEPOINT</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#5-tcl-permisos">5. TCL + PERMISOS</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#6-reflexion">6. Reflexión</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#reto-final">RETO FINAL</a>
+    </li>
+    </ul>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >3. Seguridad</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../3_Seguridad/">3. Seguridad de los datos y copias de seguridad en PostgreSQL</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../3.1_Practica/">3.1 PRÁCTICA: Copias de seguridad y restauración en PostgreSQL</a>
+                </li>
+    </ul>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">BD - Bases de Dades</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">POSTGRESQL - DCL - TCL</li>
+          <li class="breadcrumb-item">2. TCL</li>
+      <li class="breadcrumb-item active">2.2 PRÁCTICA TCL para Alumnos ASIX</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="22-practica-tcl-para-alumnos-asix">2.2 PRÁCTICA TCL para Alumnos ASIX</h1>
+<h2 id="objetivo">🎯 Objetivo</h2>
+<p>Aprender a:</p>
+<ul>
+<li>Utilizar <strong>BEGIN / START TRANSACTION</strong></li>
+<li>Aplicar <strong>COMMIT</strong></li>
+<li>Aplicar <strong>ROLLBACK</strong></li>
+<li>Usar <strong>SAVEPOINT</strong></li>
+<li>Entender la importancia de la atomicidad en bases de datos</li>
+<li>Relacionar <strong>TCL con DCL (roles y permisos)</strong></li>
+</ul>
+<hr />
+<h2 id="contexto">🗂️ Contexto</h2>
+<p>Trabajaremos con la base de datos  <strong>tienda</strong> ya creada, con su esquema <strong><code>app</code></strong>, tablas, roles y usuarios.</p>
+<p>Cuando se realiza una venta, deben ejecutarse varias acciones:</p>
+<ol>
+<li>Registrar la venta  </li>
+<li>Actualizar el stock del producto  </li>
+</ol>
+<p>⚠️ Todo esto debe hacerse como una única unidad lógica.</p>
+<hr />
+<h2 id="insertar-datos-iniciales">📊 Insertar datos iniciales</h2>
+<p>Si es necesario:</p>
+<ul>
+<li>Inserta al menos 2 productos con stock suficiente  </li>
+<li>Inserta alguna venta de prueba  </li>
+</ul>
+<hr />
+<h2 id="1-sin-transaccion-para-ver-el-problema">1. Sin Transacción (Para ver el problema)</h2>
+<ul>
+<li>
+<p>Simular una venta SIN transacción:</p>
+<ul>
+<li>Inserta una venta de 2 unidades del producto con id = 1  </li>
+<li>Actualiza el stock correspondiente  </li>
+<li>Simula un fallo en mitad del proceso  </li>
+<li>Intenta continuar con otra operación  </li>
+</ul>
+</li>
+<li>
+<p>Consultar el estado en el que han quedado las tablas.</p>
+</li>
+</ul>
+<p>📌 <strong>Pregunta:</strong><br />
+¿Es consistente la base de datos? Razona la respuesta.</p>
+<hr />
+<h2 id="2-uso-de-begin-commit">2. Uso de BEGIN + COMMIT</h2>
+<ul>
+<li>
+<p>Repite las operaciones anteriores, pero:</p>
+<ul>
+<li>Encapsula todas las operaciones en una transacción  </li>
+<li>Finaliza correctamente con COMMIT  </li>
+</ul>
+</li>
+<li>
+<p>Consultar el estado en el que han quedado las tablas.</p>
+</li>
+</ul>
+<p>📌 <strong>Pregunta:</strong><br />
+¿Se han aplicado correctamente todos los cambios? Explica por qué.</p>
+<hr />
+<h2 id="3-uso-de-rollback">3. Uso de ROLLBACK</h2>
+<ul>
+<li>
+<p>Repite las operaciones anteriores, pero:</p>
+<ul>
+<li>Ejecuta ROLLBACK antes de finalizar  </li>
+</ul>
+</li>
+<li>
+<p>Consultar el estado en el que han quedado las tablas.</p>
+</li>
+</ul>
+<p>📌 <strong>Pregunta:</strong><br />
+¿Se ha realizado alguna modificación?</p>
+<hr />
+<h2 id="4-uso-de-savepoint">4. Uso de SAVEPOINT</h2>
+<ul>
+<li>
+<p>Repite las operaciones anteriores, pero:</p>
+<ul>
+<li>Introduce un SAVEPOINT antes de cada operación importante  </li>
+<li>Realiza una operación errónea  </li>
+<li>Revierte parcialmente usando ROLLBACK TO SAVEPOINT  </li>
+<li>Finaliza la transacción  </li>
+</ul>
+</li>
+<li>
+<p>Consultar el estado en el que han quedado las tablas.</p>
+</li>
+</ul>
+<p>📌 <strong>Pregunta:</strong><br />
+¿Qué cambios se han guardado?</p>
+<hr />
+<h2 id="5-tcl-permisos">5. TCL + PERMISOS</h2>
+<ul>
+<li>
+<p>Conéctate con el usuario <strong>user_tpvs</strong> y:</p>
+<ul>
+<li>Inicia una transacción  </li>
+<li>Intenta modificar el stock de productos  </li>
+<li>Finaliza la transacción  </li>
+</ul>
+</li>
+</ul>
+<p>📌 <strong>Pregunta:</strong><br />
+¿Se permite la operación? Explica qué ocurre y por qué.</p>
+<hr />
+<h2 id="6-reflexion">6. Reflexión</h2>
+<p>Responder:</p>
+<ol>
+<li>¿Qué ventaja tienen las transacciones?  </li>
+<li>¿Qué ocurriría en un sistema real sin ellas?  </li>
+<li>¿Qué diferencia hay entre ROLLBACK y ROLLBACK TO SAVEPOINT?  </li>
+<li>¿En qué situaciones reales usarías SAVEPOINT?  </li>
+</ol>
+<hr />
+<h2 id="reto-final">RETO FINAL</h2>
+<p>Crear una transacción que:</p>
+<ul>
+<li>Venda <strong>2 productos diferentes a la vez</strong>  </li>
+<li>Actualice correctamente el stock de ambos  </li>
+<li>Si falla una operación, <strong>no se debe registrar ninguna venta</strong>  </li>
+</ul>
+<hr />
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../2.1_Practica/" class="btn btn-neutral float-left" title="2.1 PRÁCTICA TCL para Alumnos DAW"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../3_Seguridad/" class="btn btn-neutral float-right" title="3. Seguridad de los datos y copias de seguridad en PostgreSQL">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../2.1_Practica/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../3_Seguridad/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

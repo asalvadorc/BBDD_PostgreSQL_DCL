@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>3. Seguridad de los datos y copias de seguridad en PostgreSQL - BD - Bases de Dades</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../css/extra.css" rel="stylesheet" />
+        <link href="../img/favicon.ico" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "3. Seguridad de los datos y copias de seguridad en PostgreSQL";
+        var mkdocs_page_input_path = "3_Seguridad.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="..">
+          <img src="../assets/logocaminas.png" class="logo" alt="Logo"/>
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">POSTGRESQL - DCL - TCL</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../1_introducci/">0. Introducción</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >1. DCL</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../1_DCLv2/">1. El lenguaje de control de datos DCL</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../1.1_Practica/">1.1 PRÁCTICA DCL POSTGRESQL</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >2. TCL</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../2_TCL/">2. El lenguaje de control de transacciones TCL</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../2.1_Practica/">2.1 PRÁCTICA TCL para Alumnos DAW</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../2.2_Practica/">2.2 PRÁCTICA TCL para Alumnos ASIX</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" >3. Seguridad</a>
+    <ul class="current">
+                <li class="toctree-l2 current"><a class="reference internal current" href="#">3. Seguridad de los datos y copias de seguridad en PostgreSQL</a>
+    <ul class="current">
+    <li class="toctree-l3"><a class="reference internal" href="#1-introduccion">1. Introducción</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#2-objetivos-de-la-unidad">2. Objetivos de la unidad</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#3-principios-de-seguridad-de-la-informacion">3. Principios de seguridad de la información</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#4copias-de-seguridad-backups">4.Copias de seguridad (Backups)</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#5-recuperacion-de-datos">5. Recuperación de datos</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#6-herramientas-para-realizar-copias-de-seguridad-en-postgresql">6. Herramientas para realizar copias de seguridad en PostgreSQL</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#7-herramientas-para-restaurar-una-copia-de-seguridad-en-postgresql">7. Herramientas para restaurar una copia de seguridad en PostgreSQL</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#8-copias-de-seguridad-con-dbeaver">8. Copias de seguridad con DBeaver</a>
+    </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../3.1_Practica/">3.1 PRÁCTICA: Copias de seguridad y restauración en PostgreSQL</a>
+                </li>
+    </ul>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">BD - Bases de Dades</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">POSTGRESQL - DCL - TCL</li>
+          <li class="breadcrumb-item">3. Seguridad</li>
+      <li class="breadcrumb-item active">3. Seguridad de los datos y copias de seguridad en PostgreSQL</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="3-seguridad-de-los-datos-y-copias-de-seguridad-en-postgresql">3. Seguridad de los datos y copias de seguridad en PostgreSQL</h1>
+<h2 id="1-introduccion">1. Introducción</h2>
+<p>Las bases de datos almacenan información crítica para las organizaciones.<br />
+Por este motivo es imprescindible implementar mecanismos que permitan <strong>proteger los datos y recuperarlos</strong> en caso de fallo del sistema, errores humanos o pérdida accidental de información.</p>
+<p>En esta unidad aprenderemos a realizar <strong>copias de seguridad (backups)</strong> y a <strong>restaurar la información</strong> utilizando PostgreSQL.</p>
+<p>En el entorno del aula trabajaremos con <strong>PostgreSQL ejecutándose en un contenedor Docker</strong> y utilizaremos la herramienta gráfica <strong>DBeaver</strong> para administrar la base de datos.</p>
+<hr />
+<h2 id="2-objetivos-de-la-unidad">2. Objetivos de la unidad</h2>
+<ul>
+<li>Comprender los principios básicos de <strong>seguridad de la información</strong>.</li>
+<li>Conocer los diferentes <strong>tipos de copias de seguridad</strong>.</li>
+<li>Realizar <strong>copias de seguridad en PostgreSQL</strong>.</li>
+<li>Restaurar bases de datos a partir de un <strong>backup</strong>.</li>
+<li>Utilizar <strong>DBeaver</strong> para realizar tareas de administración.</li>
+</ul>
+<hr />
+<h2 id="3-principios-de-seguridad-de-la-informacion">3. Principios de seguridad de la información</h2>
+<p>La seguridad de los datos en una base de datos se basa en tres principios fundamentales:</p>
+<ul>
+<li><strong>Confidencialidad</strong>: Solo los <strong>usuarios autorizados</strong> deben poder acceder a la información. Se refiere al control de accesos y permisos a la BD.</li>
+<li>
+<p><strong>Integridad: Los datos</strong> deben mantenerse <strong>correctos y consistentes</strong>. Se refiere a restricciones, claves primarias y foráneas, y reglas de validación.</p>
+</li>
+<li>
+<p><strong>Disponibilidad</strong>: La información debe estar <strong>accesible cuando se necesite</strong>. Se refiere a backups, recuperación ante fallos, y mantenimiento del sistema. Es la parte que veremos en esta unidad.</p>
+</li>
+</ul>
+<hr />
+<h2 id="4copias-de-seguridad-backups">4.Copias de seguridad (Backups)</h2>
+<p>Las copias de seguridad consisten en crear duplicados de la información almacenada en una base de datos con el objetivo de poder recuperarla en caso de pérdida, fallo del sistema, errores humanos o ataques informáticos.
+Son un elemento fundamental para garantizar la disponibilidad de los datos.</p>
+<div class="admonition tip">
+<p>Realizar copias de seguridad de forma periódica permite restaurar la información y continuar con el funcionamiento del sistema sin grandes pérdidas de datos.</p>
+</div>
+<p><strong class="azul">Tipos de copias de seguridad</strong></p>
+<p><strong>Según la cantidad de datos que se copian</strong></p>
+<ul>
+<li>
+<p><strong>Copia completa</strong>: Se realiza una copia de toda la base de datos.</p>
+</li>
+<li>
+<p><strong>Copia incremental</strong>: Solo guarda los cambios realizados desde la última copia.</p>
+</li>
+<li>
+<p><strong>Copia diferencial</strong>: Guarda los cambios realizados desde la última copia completa.</p>
+</li>
+</ul>
+<p><strong>Según el momento en que se realizan</strong></p>
+<ul>
+<li><strong>Copias en frío</strong>: Se realizan cuando el servidor de base de datos está <strong>detenido</strong>.  Este método garantiza que los datos <strong>no están siendo modificados durante la copia</strong>.</li>
+<li><strong>Copias en caliente</strong>: Se realizan <strong>mientras la base de datos está funcionando</strong>.  </li>
+</ul>
+<p><strong>Según el tipo de información que se copia</strong></p>
+<ul>
+<li>
+<p><strong>Copias físicas</strong>: Consiste en copiar directamente los archivos internos de la base de datos que PostgreSQL guarda en disco. Este tipo de copia es rápida pero depende del sistema gestor.</p>
+</li>
+<li>
+<p><strong>Copias lógicas</strong>: Consiste en exportar los datos en forma de sentencias SQL o archivos de texto. Estas copias son más portables y permiten restaurar datos en otros servidores.</p>
+</li>
+</ul>
+<p>Además, las copias de seguridad también pueden utilizarse para <strong>replicar o clonar una base de datos en otro servidor</strong>. Para ello se crea el backup en el servidor original, se transfiere el archivo al nuevo servidor y se restaura allí. Este método permite obtener una copia exacta de la base de datos y suele utilizarse para migraciones o para crear entornos de prueba. No obstante, este procedimiento genera una replicación puntual, ya que las bases de datos no se mantienen sincronizadas automáticamente.</p>
+<h2 id="5-recuperacion-de-datos">5. Recuperación de datos</h2>
+<p>La recuperación de datos es el proceso mediante el cual se restaura una base de datos a un estado correcto después de que haya ocurrido un fallo o pérdida de información. Este proceso permite volver a disponer de los datos y continuar con el funcionamiento normal del sistema.</p>
+<p>La recuperación es un elemento clave para garantizar el principio de disponibilidad, ya que permite minimizar la pérdida de información y reducir el tiempo de inactividad del sistema.</p>
+<p>Algunas situaciones en las que se necesita recuperación podrían ser:</p>
+<ul>
+<li>Fallos del sistema o del hardware, como averías en el servidor o en el disco duro.</li>
+<li>Errores humanos, como el borrado accidental de datos o tablas.</li>
+<li>Corrupción de datos, cuando la información almacenada se daña.</li>
+<li>Ataques informáticos o accesos no autorizados que afectan a la base de datos.</li>
+</ul>
+<p><strong class="azul">Métodos de recuperación</strong></p>
+<p>Para recuperar una base de datos normalmente se utilizan copias de seguridad previamente realizadas. Los métodos más comunes son:</p>
+<ul>
+<li>
+<p><strong>Restauración completa</strong>: Se recupera toda la base de datos a partir de una copia de seguridad completa.</p>
+</li>
+<li>
+<p><strong>Restauración parcial</strong>: Se recuperan solo determinados datos, tablas o partes de la base de datos.</p>
+</li>
+<li>
+<p><strong>Recuperación a un punto en el tiempo</strong>: Permite restaurar la base de datos a un momento concreto antes de que ocurriera el problema.</p>
+</li>
+</ul>
+<p><strong class="azul">Arquitectura de recuperación en PostgreSQL (WAL)</strong></p>
+<p>Algunos sistemas de bases de datos, como Postgres, utilizan mecanismos como Write-Ahead Logging (WAL), donde las operaciones se registran en un log antes de aplicarse a los datos. Esto permite recuperar la base de datos en caso de fallo. Si ocurre un fallo del sistema, PostgreSQL puede leer el WAL y reconstruir los datos.</p>
+<p>Dónde está y cómo verlo depende del sistema gestor de bases de datos (SGBD) que estés usando. En PostgreSQL, los archivos WAL se guardan dentro del directorio de datos del servidor. Normalmente están en la carpeta <strong>pg_wal/</strong>.</p>
+<h2 id="6-herramientas-para-realizar-copias-de-seguridad-en-postgresql">6. Herramientas para realizar copias de seguridad en PostgreSQL</h2>
+<p>En <strong>PostgreSQL</strong> existen diferentes opciones para realizar copias de seguridad, dependiendo de si se quiere copiar una base de datos concreta, todo el servidor o incluso los archivos físicos del sistema. Las herramientas principales que ofrece el sistema permiten realizar <strong>copias lógicas o físicas</strong>.</p>
+<p>Una de las herramientas más utilizadas es <strong>pg_dump</strong>, que permite crear copias de seguridad de una base de datos específica. Este tipo de copia se denomina <strong>copia lógica</strong>, ya que exporta la estructura y los datos en forma de sentencias SQL o en formato binario.</p>
+<p>Otra opción es <strong>pg_dumpall</strong>, que permite crear una copia de seguridad de todas las bases de datos del servidor PostgreSQL, incluyendo también los roles, usuarios y permisos.</p>
+<p>Por otro lado, PostgreSQL también permite realizar <strong>copias físicas</strong> del servidor mediante herramientas como <strong>pg_basebackup</strong>, que copia directamente los archivos del sistema de la base de datos. Este tipo de copia se utiliza principalmente para replicación o recuperación completa del servidor.</p>
+<p>En resumen, las principales opciones para realizar copias de seguridad en PostgreSQL son:</p>
+<table>
+<thead>
+<tr>
+<th>Herramienta</th>
+<th>Qué copia</th>
+<th>Tipo de copia</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>pg_dump</code></td>
+<td>Una base de datos</td>
+<td>Lógica</td>
+</tr>
+<tr>
+<td><code>pg_dumpall</code></td>
+<td>Todas las bases de datos del servidor</td>
+<td>Lógica</td>
+</tr>
+<tr>
+<td><code>pg_basebackup</code></td>
+<td>Archivos completos del servidor</td>
+<td>Física</td>
+</tr>
+</tbody>
+</table>
+<p>Estas herramientas permiten adaptar el tipo de copia de seguridad a las necesidades del sistema y al tamaño de la base de datos.</p>
+<p>Además de poder realizar copias de seguridad de una base de datos completa o de todo el servidor, PostgreSQL también permite crear copias de <strong>objetos específicos</strong>, como tablas o esquemas. Esto se puede hacer utilizando diferentes opciones del comando <strong>pg_dump</strong>, como -t para copiar una tabla concreta o -n para copiar un esquema completo. Estas opciones permiten realizar copias más selectivas cuando no es necesario respaldar toda la base de datos.</p>
+<table>
+<thead>
+<tr>
+<th>Herramienta / opción</th>
+<th>Qué copia</th>
+<th>Tipo de copia</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>pg_dump -t tabla</code></td>
+<td>Una tabla concreta</td>
+<td>Lógica</td>
+</tr>
+<tr>
+<td><code>pg_dump -n esquema</code></td>
+<td>Un esquema completo</td>
+<td>Lógica</td>
+</tr>
+</tbody>
+</table>
+<p><strong class="azul">Copias de seguridad con pg_dump</strong></p>
+<p><strong>pg_dump</strong> es la herramienta principal de PostgreSQL para realizar copias de seguridad lógicas.
+En nuestro entorno con <strong>Docker</strong>, <strong>pg_dump</strong> se ejecuta dentro del contenedor de PostgreSQL.</p>
+<p><strong>Formatos de copias de seguridad en PostgreSQL</strong></p>
+<p>En PostgreSQL las copias de seguridad pueden generarse principalmente en dos formatos: <strong>SQL o dump</strong> (formato custom). La elección de uno u otro depende del uso que se quiera dar al backup y de las herramientas que se utilizarán para restaurarlo.</p>
+<ul>
+<li>
+<p><strong>El formato SQL</strong> genera un archivo de texto que contiene sentencias SQL como CREATE TABLE, INSERT o ALTER. Estas sentencias permiten reconstruir la base de datos ejecutando el archivo con la herramienta <strong>psql</strong>. Este formato es fácil de leer y editar, por lo que suele utilizarse en entornos de aprendizaje o para bases de datos pequeñas.</p>
+</li>
+<li>
+<p><strong>El formato dump o custom</strong> es un formato binario generado normalmente con la opción <strong>-Fc</strong> de <strong>pg_dump</strong>. Este tipo de archivo no es legible directamente, pero permite realizar restauraciones más flexibles utilizando la herramienta <strong>pg_restore</strong>. Entre sus ventajas se encuentran la posibilidad de restaurar solo ciertos objetos de la base de datos o realizar restauraciones en paralelo, lo que resulta especialmente útil en bases de datos de mayor tamaño.</p>
+</li>
+</ul>
+<div class="admonition note">
+<p>En resumen, el formato <strong>SQL</strong> es más simple y legible, mientras que el formato <strong>dump</strong> ofrece mayor flexibilidad y eficiencia durante la restauración.</p>
+</div>
+<p>En los <strong>siguientes ejemplos</strong> aprenderemos a utilizar ambas herramientas para realizar copias de seguridad. Trabajaremos con la base de datos <strong>tienda</strong>, que hemos creado en esta unidad, y sobre ella realizaremos las copias de seguridad.</p>
+<p>Antes de empezar, crearemos una carpeta donde guardaremos los archivos de backup. Esto nos permitirá tener los datos organizados y localizarlos fácilmente.</p>
+<pre><code>    postgres_local/
+    │
+    ├─ docker-compose.yml
+    └─ backups/
+</code></pre>
+<div class="admonition warning">
+<p><strong>Ejemplo 1</strong>: Copia de seguridad en formato <strong>SQL</strong>:    </p>
+</div>
+<hr />
+<pre><code>    docker compose exec -T postgres pg_dump -U admin -C tienda &gt; backups/tienda_backup.sql
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Parte</th>
+<th>Función</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>docker compose exec postgres</td>
+<td>Ejecuta un comando dentro del contenedor</td>
+</tr>
+<tr>
+<td>pg_dump</td>
+<td>Herramienta que crea una copia de seguridad de una base de datos</td>
+</tr>
+<tr>
+<td>-T</td>
+<td>Evita problemas de codificación</td>
+</tr>
+<tr>
+<td>-U admin</td>
+<td>Indica el usuario de PostgreSQL con el que se realiza la conexión</td>
+</tr>
+<tr>
+<td>-C</td>
+<td>Incluye en el archivo de backup la instrucción CREATE DATABASE</td>
+</tr>
+<tr>
+<td>tienda</td>
+<td>Nombre de la base de datos que se quiere copiar</td>
+</tr>
+<tr>
+<td>&gt;</td>
+<td>Redirige la salida del comando a un archivo</td>
+</tr>
+<tr>
+<td>tienda_backup.sql</td>
+<td>Archivo donde se guarda el backup en formato SQL</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition warning">
+<p><strong>Ejemplo 2</strong>: Copia de seguridad en formato <strong>dump (binario)</strong>:</p>
+</div>
+<p>Cuando se trabaja con PostgreSQL dentro de un contenedor Docker y se utiliza PowerShell en Windows, pueden aparecer problemas al manejar archivos de backup <strong>binarios</strong> (formato custom) usando redirecciones (&gt;, &lt;) o pipes. Esto ocurre porque PowerShell puede modificar el flujo de datos binarios.</p>
+<p>Para evitar estos problemas, la forma más fiable es crear el backup dentro del contenedor y copiarlo después al sistema anfitrión, y hacer lo mismo en el proceso de restauración.</p>
+<p>Primero se genera el backup dentro del contenedor usando pg_dump en formato custom:</p>
+<pre><code>    docker compose exec -T postgres pg_dump -U admin -Fc -C tienda -f /tmp/dump_tienda.dump
+</code></pre>
+<p>Después se copia el archivo desde el contenedor a la carpeta backups del sistema anfitrión:</p>
+<pre><code>    docker cp postgres:/tmp/dump-tienda.dump backups/dump-tienda.dump
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Parte</th>
+<th>Función</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>docker compose exec postgres</td>
+<td>Ejecuta un comando dentro del contenedor</td>
+</tr>
+<tr>
+<td>pg_dump</td>
+<td>Herramienta que crea una copia de seguridad de una base de datos</td>
+</tr>
+<tr>
+<td>-T</td>
+<td>Evita problemas de codificación</td>
+</tr>
+<tr>
+<td>-U admin</td>
+<td>Indica el usuario de PostgreSQL con el que se realiza la conexión</td>
+</tr>
+<tr>
+<td>-Fc</td>
+<td>Genera el backup en formato custom (binario) compatible con pg_restore</td>
+</tr>
+<tr>
+<td>-C</td>
+<td>Incluye en el backup la instrucción CREATE DATABASE</td>
+</tr>
+<tr>
+<td>tienda</td>
+<td>Nombre de la base de datos que se quiere copiar</td>
+</tr>
+<tr>
+<td>-f</td>
+<td>Permite indicar el archivo donde se guardará el backup</td>
+</tr>
+<tr>
+<td>/tmp/dump-tienda.dump</td>
+<td>Ruta dentro del contenedor donde se guarda el archivo de backup</td>
+</tr>
+</tbody>
+</table>
+<h2 id="7-herramientas-para-restaurar-una-copia-de-seguridad-en-postgresql">7. Herramientas para restaurar una copia de seguridad en PostgreSQL</h2>
+<p>En PostgreSQL existen diferentes herramientas para restaurar copias de seguridad, dependiendo del formato del backup:</p>
+<ul>
+<li>
+<p>Backup en formato <strong>SQL</strong> (.sql): Se restaura ejecutando el archivo con la herramienta <strong>psql</strong></p>
+</li>
+<li>
+<p>Backup en formato <strong>binario o personalizado</strong> (.backup, .dump): Se restaura con la herramienta <strong>pg_restore</strong></p>
+</li>
+</ul>
+<p>Al restaurar una copia de seguridad en PostgreSQL, en algunos casos, el archivo de backup incluye la sentencia <strong>CREATE DATABASE</strong>, que crea automáticamente la base de datos durante la restauración. Por el contrario, si el archivo de backup no contiene la sentencia de creación de la base de datos, entonces es necesario crear la base de datos manualmente antes de restaurar el backup. Una vez creada, se ejecuta la restauración indicando esa base de datos como destino para que se creen las tablas, datos y demás objetos.   </p>
+<p>Para crear una base de datos a partir de otra existente desde Docker Compose, debes ejecutar el comando SQL usando psql dentro del contenedor: </p>
+<pre><code>    docker compose exec postgres psql -U admin -d postgres -c "CREATE DATABASE nueva_bd;"
+</code></pre>
+<p>En los siguientes ejemplos aprenderemos a utilizar ambas herramientas para restaurar la base de datos <strong>tienda</strong>, de la que ya hemos hecho la copia de seguridad en los ejemplos anteriores.        </p>
+<div class="admonition warning">
+<p><strong>Ejemplo 3</strong>: Restauración con <strong>psql</strong></p>
+</div>
+<p>En Linux:</p>
+<pre><code>    docker compose exec -T postgres psql -U admin -d postgres &lt; backups/tienda_backup.sql
+</code></pre>
+<p>En Windows:</p>
+<pre><code>    type backups/tienda_backup.sql | docker compose exec -T postgres psql -U admin -d postgres
+</code></pre>
+<div class="admonition warning">
+<p><strong>Ejemplo 4</strong>: Restauración con <strong>pg_restore</strong></p>
+</div>
+<p>Primero se copia el archivo desde el contenedor a la carpeta backups del sistema anfitrión:</p>
+<pre><code>    docker cp postgres:/tmp/dump-tienda.dump backups/dump-tienda.dump
+</code></pre>
+<p>Después se restaura la BD desde la carpeta de backups usando <strong>pg_restore</strong>:</p>
+<pre><code>    docker compose exec postgres pg_restore -U admin -C -d postgres /tmp/dump_tienda.dump
+</code></pre>
+<p>La opción -C permite que el proceso cree la base de datos tienda automáticamente antes de restaurar su contenido.</p>
+<h2 id="8-copias-de-seguridad-con-dbeaver">8. Copias de seguridad con DBeaver</h2>
+<p>Cuando se realizan copias de seguridad o restauraciones desde DBeaver, en realidad el programa no implementa su propio sistema de backup. Internamente utiliza las herramientas oficiales de PostgreSQL, como pg_dump, psql y pg_restore.</p>
+<p>DBeaver simplemente proporciona una interfaz gráfica que facilita el uso de estas herramientas sin tener que escribir los comandos manualmente.</p>
+<p>Dependiendo de la operación que se realice desde la interfaz, DBeaver ejecutará una u otra herramienta por debajo.</p>
+<table>
+<thead>
+<tr>
+<th>Opción en DBeaver</th>
+<th>Herramienta utilizada</th>
+<th>Función</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Tools → Backup (SQL o dump)</td>
+<td><code>pg_dump</code></td>
+<td>Crear copias de seguridad en formato SQL (plain) o  custom o binario (.dump)</td>
+</tr>
+<tr>
+<td>Tools → Restore (dump)</td>
+<td><code>pg_restore</code></td>
+<td>Restaurar copias en formato custom o binario</td>
+</tr>
+<tr>
+<td>Execute Script</td>
+<td><code>psql</code></td>
+<td>Restaurar copias en formato SQL ejecutando el script</td>
+</tr>
+</tbody>
+</table>
+<p><strong class="azul">Hacer una copia de seguridad en DBeaver:</strong></p>
+<table>
+<thead>
+<tr>
+<th>1. Clic derecho, Tools → Backup</th>
+<th>2. Seleccionar los objetos</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><img alt="Paso 1" src="../image-1.png" /></td>
+<td><img alt="Paso 2" src="../image-2.png" /></td>
+</tr>
+<tr>
+<td><strong>3. Elegir el formato de exportación</strong></td>
+<td><strong>4. Guardar backup</strong></td>
+</tr>
+<tr>
+<td><img alt="Paso 3" src="../image-3.png" /></td>
+<td><img alt="Paso 4" src="../image-4.png" /></td>
+</tr>
+</tbody>
+</table>
+<p><strong class="azul">Restaurar una copia de seguridad en DBeaver:</strong></p>
+<ul>
+<li>Si el archivo de backup es en formato SQL</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>1. Clic derecho, Tools → Ejecutar Script</th>
+<th>2. Seleccionar el archivo .sql</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><img alt="Paso 5" src="../image-9.png" /></td>
+<td><img alt="Paso 7" src="../image-10.png" /></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>Si el archivo de backup es en formato dump</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>1. Clic derecho, Tools → Restore</th>
+<th>2. Seleccionar el archivo .dmp</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><img alt="Paso 6" src="../image-8.png" /></td>
+<td><img alt="Paso 8" src="../image-6.png" /></td>
+</tr>
+</tbody>
+</table>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../2.2_Practica/" class="btn btn-neutral float-left" title="2.2 PRÁCTICA TCL para Alumnos ASIX"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../3.1_Practica/" class="btn btn-neutral float-right" title="3.1 PRÁCTICA: Copias de seguridad y restauración en PostgreSQL">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../2.2_Practica/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../3.1_Practica/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

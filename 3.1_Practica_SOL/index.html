@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>9. Práctica: Copias de seguridad y restauración en PostgreSQL - BD - Bases de Dades</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../css/extra.css" rel="stylesheet" />
+        <link href="../img/favicon.ico" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "9. Pr\u00e1ctica: Copias de seguridad y restauraci\u00f3n en PostgreSQL";
+        var mkdocs_page_input_path = "3.1_Practica_SOL.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="..">
+          <img src="../assets/logocaminas.png" class="logo" alt="Logo"/>
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">POSTGRESQL - DCL - TCL</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../1_introducci/">0. Introducción</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >1. DCL</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../1_DCLv2/">1. El lenguaje de control de datos DCL</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../1.1_Practica/">1.1 PRÁCTICA DCL POSTGRESQL</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >2. TCL</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../2_TCL/">2. El lenguaje de control de transacciones TCL</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../2.1_Practica/">2.1 PRÁCTICA TCL para Alumnos DAW</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../2.2_Practica/">2.2 PRÁCTICA TCL para Alumnos ASIX</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >3. Seguridad</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../3_Seguridad/">3. Seguridad de los datos y copias de seguridad en PostgreSQL</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../3.1_Practica/">3.1 PRÁCTICA: Copias de seguridad y restauración en PostgreSQL</a>
+                </li>
+    </ul>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">BD - Bases de Dades</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">9. Práctica: Copias de seguridad y restauración en PostgreSQL</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="9-practica-copias-de-seguridad-y-restauracion-en-postgresql">9. Práctica: Copias de seguridad y restauración en PostgreSQL</h1>
+<h2 id="objetivo">Objetivo</h2>
+<p>En esta práctica aprenderás a:</p>
+<ul>
+<li>Realizar copias de seguridad en PostgreSQL  </li>
+<li>Restaurar bases de datos a partir de backups  </li>
+<li>Trabajar con herramientas como <strong>pg_dump</strong>, <strong>psql</strong> y <strong>pg_restore</strong>  </li>
+<li>Utilizar PostgreSQL en un entorno con <strong>Docker</strong>  </li>
+</ul>
+<hr />
+<h2 id="enunciado">Enunciado</h2>
+<p>La empresa <strong>TechShop</strong> necesita asegurar la información de su base de datos <code>tienda</code>.  </p>
+<p>Como administrador/a de bases de datos, deberás:</p>
+<ul>
+<li>Crear copias de seguridad  </li>
+<li>Simular la pérdida de datos  </li>
+<li>Restaurar la información  </li>
+</ul>
+<hr />
+<h2 id="parte-1-preparacion-del-entorno">Parte 1. Preparación del entorno</h2>
+<ol>
+<li>
+<p>Crear una carpeta llamada <code>backups</code> en la misma ubicación donde está el archivo docker-compose.yml, ya que será desde ahí donde ejecutaremos los comandos de Docker.</p>
+</li>
+<li>
+<p>Comprobar que las herramientas <code>pg_dump</code> y <code>pg_restore</code> están disponibles en el contenedor.</p>
+<p>docker compose exec postgres pg_dump --version
+docker compose exec postgres pg_restore --version</p>
+</li>
+</ol>
+<hr />
+<h2 id="parte-2-backup-en-formato-sql">Parte 2. Backup en formato SQL</h2>
+<p>Realiza una copia de seguridad de la base de datos <code>tienda</code> en formato SQL.</p>
+<pre><code>docker compose exec -T postgres pg_dump -U admin -C tienda &gt; backups/tienda.sql
+</code></pre>
+<hr />
+<h2 id="parte-3-simulacion-de-fallo">Parte 3. Simulación de fallo</h2>
+<p>Elimina la base de datos <code>tienda</code>.</p>
+<pre><code>docker compose exec postgres psql -U admin -d postgres -c "DROP DATABASE tienda;"
+</code></pre>
+<hr />
+<h2 id="parte-4-restauracion-con-psql">Parte 4. Restauración con psql</h2>
+<p>Restaura la base de datos utilizando el archivo SQL generado.</p>
+<p>En Linux:</p>
+<pre><code>docker compose exec -T postgres psql -U admin -d postgres &lt; backups/tienda.sql
+</code></pre>
+<p>En Windows:</p>
+<pre><code>type backups/tienda.sql | docker compose exec -T postgres psql -U admin -d postgres
+</code></pre>
+<hr />
+<h2 id="parte-5-backup-en-formato-dump">Parte 5. Backup en formato dump</h2>
+<p>Realiza una copia de seguridad en formato binario (custom).</p>
+<pre><code>docker compose exec -T postgres pg_dump -U admin -Fc -C tienda -f /tmp/tienda.dump
+</code></pre>
+<p>Copia el archivo al sistema anfitrión:</p>
+<pre><code>docker cp postgres:/tmp/tienda.dump backups/tienda.dump
+</code></pre>
+<hr />
+<h2 id="parte-6-restauracion-con-pg_restore">Parte 6. Restauración con pg_restore</h2>
+<ol>
+<li>
+<p>Elimina de nuevo la base de datos <code>tienda</code>.</p>
+<p>docker compose exec postgres psql -U admin -d postgres -c "DROP DATABASE tienda;"</p>
+</li>
+<li>
+<p>Restaura la base de datos utilizando el archivo dump.</p>
+<p>docker compose exec postgres pg_restore -U admin -C -d postgres /tmp/tienda.dump</p>
+</li>
+</ol>
+<hr />
+<h2 id="parte-7-verificacion">Parte 7. Verificación</h2>
+<p>Comprueba el contenido de las tablas tras la restauración.</p>
+<pre><code>SELECT * FROM app.productos;
+SELECT * FROM app.ventas;
+</code></pre>
+<hr />
+<h2 id="parte-8-cuestiones">Parte 8. Cuestiones</h2>
+<p>Responde a las siguientes preguntas:</p>
+<ol>
+<li>¿Qué diferencia hay entre un backup en formato SQL y en formato dump?  </li>
+<li>¿Qué herramienta se utiliza para restaurar cada uno?  </li>
+<li>¿Por qué se utiliza la base de datos <code>postgres</code> durante la restauración?  </li>
+<li>¿Qué ocurre si intentas restaurar una base de datos que ya existe?  </li>
+<li>¿Qué ventajas tiene el formato dump frente al SQL?  </li>
+</ol>
+<hr />
+<h2 id="parte-9-ampliacion-opcional">Parte 9. Ampliación (opcional)</h2>
+<p>Realiza una copia de seguridad únicamente de la tabla <code>productos</code>.</p>
+<pre><code>docker compose exec postgres pg_dump -U admin -t app.productos tienda &gt; backups/productos.sql
+</code></pre>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
